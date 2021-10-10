@@ -1,0 +1,182 @@
+name:  R2S-K5.4
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+  schedule:
+    - cron:  '40 19 * * 0,3'
+  watch:
+    types: started
+
+jobs:
+  R2S-K54:
+    runs-on: ubuntu-18.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Init Building Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive 
+      run: |
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        echo "Init Building:$(date +%F_%H%M%S)"
+        sudo -E swapoff -a
+        docker rmi $(docker images -q) 
+        sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android /opt/ghc /swapfile
+        sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android* 
+        sudo -E apt-get update -y 
+        sudo -E apt-get full-upgrade -y 
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
+        sudo -E apt-get autoremove -y --purge 
+        sudo -E apt-get clean -y  
+        
+    - name: Show system
+      run: |
+        echo -e "Total CPU cores\t: $(nproc)"
+        cat /proc/cpuinfo | grep 'model name'
+        free -h
+        uname -a
+        [ -f /proc/version ] && cat /proc/version
+        [ -f /etc/issue.net ] && cat /etc/issue.net
+        [ -f /etc/issue ] && cat /etc/issue
+        ulimit -a
+        df -hP
+        
+    - name: Clone Source
+      run: |
+        echo "Clone Source":$(date +%F_%H%M%S)
+        sudo mkdir -pv /build/{package,upload,buildinfo}
+        sudo chown -R runner:runner /build
+        git clone --branch openwrt-18.06-k5.4 --single-branch https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        cd /build/immortalwrt
+        rm -rf tmp/
+        ./scripts/feeds update -a || ./scripts/feeds update -a
+        ./scripts/feeds install -a || ./scripts/feeds install -a
+        wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-config.buildinfo
+        cat /build/immortalwrt/R2S-config.buildinfo > "/build/immortalwrt/.config"
+        
+    - name: Configuration Customization
+      id: configuration
+      run: |
+        echo "Configuration Customization":$(date +%F_%H%M%S)
+        sh $GITHUB_WORKSPACE/scripts/Customization.sh
+        sed -i 's/luci-theme-bootstrap/luci-theme-argon/' /build/immortalwrt/feeds/luci/collections/luci/Makefile
+        cat /build/immortalwrt/feeds/luci/collections/luci/Makefile
+        sed -i '$d' /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/network_dhcp_settings >> /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
+        cp $GITHUB_WORKSPACE/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings-chinese
+        sed -i 's/10.0.0.1/10.0.0.3/g' /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
+        
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        
+    - name: Defconfig
+      id: defconfig
+      run: |
+        echo "Defconfig immortalwrt":$(date +%F_%H%M%S)
+        cd /build/immortalwrt/ && ls -lash
+        make defconfig
+        make -j8 download || make -j1 download || make -j1 download V=s 
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+        ./scripts/diffconfig.sh > /build/buildinfo/R2S-config.buildinfo
+        wc -l /build/buildinfo/R2S-config.buildinfo
+        cat /build/buildinfo/R2S-config.buildinfo
+        echo "########################################"
+        ls -lh /build/buildinfo/
+        
+    - name: Deliver buildinfo
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_buildinfo_R2S-K5.4
+        path: /build/buildinfo/
+        if-no-files-found: ignore
+        
+    - name: Compile
+      id: tools
+      run: |
+        cd /build/immortalwrt/
+        echo -e "$(nproc) thread compile"
+        make tools/compile -j$(nproc) || make tools/compile -j1 V=s
+        make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
+        make target/compile -j$(nproc) || make target/compile -j1 V=s IGNORE_ERRORS=1
+        make diffconfig
+        make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j1 V=s IGNORE_ERRORS=1
+        make package/index
+
+    - name: Generate Firmware
+      id: generate
+      run: |
+        cd /build/immortalwrt/
+        echo -e "$(nproc) thread compile"
+        make package/install -j$(nproc) || make package/install -j1 V=s
+        make target/install -j$(nproc) || make target/install -j1 V=s
+        make checksum
+        tree bin/
+        tree -d bin/
+        cd /build/immortalwrt/bin/targets/rockchip/armv8 && ls -lSha
+        
+    - name: Prepare artifact
+      run: |
+        echo "Prepare artifact":$(date +%F_%H%M%S)
+        rm -rf $(find /build/immortalwrt/bin/targets/ -type d -name "packages")
+        cp -rf $(find /build/immortalwrt/bin/targets/ -type f) /build/upload/
+        cp -rf $(find /build/immortalwrt/bin/packages/ -type f -name "*.ipk")  /build/package/
+        cd /build/ && zip -qr /build/upload/package_$(date +%F_%H%M%S).zip  package/
+        cd /build/upload/
+        ls -lh 
+        for source_name in `ls immortalwrt*`;do tag_name=$(date +%F_%H%M%S)_  modify_name=$tag_name$source_name;mv $source_name $modify_name;done
+        ls -lh /build/upload/
+        tar -czvf /build/immortalwrt-dl_$(date +%F_%H%M%S).tar.gz /build/immortalwrt/dl/
+        
+    - name: Deliver firmware
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_firmware_R2S-K5.4
+        path: /build/upload/
+        if-no-files-found: ignore
+        
+    - name: Generate release tag
+      id: tag
+      run: |
+        echo "::set-output name=release_tag::$(date +%F_%H%M%S)_immortalwrt-18.06-k5.4-R2S"
+        echo "::set-output name=release_date::$(date +"%F_%H%M%S")"
+        touch release.txt
+        echo "http://10.0.0.3" > release.txt
+        echo "http://immortalwrt.lan" >> release.txt
+        #echo "::set-output name=status::success"
+        echo "::set-output name=TAG_STATUS::success"
+        
+    - name: Upload firmware to release
+      if: steps.tag.outputs.TAG_STATUS == 'success'
+      uses: softprops/action-gh-release@v0.1.8
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ steps.tag.outputs.release_date }}_immortalwrt-18.06-k5.4-R2S
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: |
+          /build/upload/*
+        
+    - name: Deliver dl
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_dl
+        path: /build/immortalwrt-dl*.tar.gz
+        if-no-files-found: ignore

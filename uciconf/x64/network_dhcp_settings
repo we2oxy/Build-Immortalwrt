@@ -1,0 +1,92 @@
+
+
+uci set network.lan=interface
+uci set network.lan.ifname='eth1'
+uci set network.lan.delegate='0'
+uci set network.lan.ip6assign='0'
+uci set network.lan.ipaddr='10.0.0.1'
+uci set network.lan.netmask='255.255.255.0'
+#uci set network.lan.dns='119.29.29.29 223.5.5.5 180.76.76.76'
+uci set network.lan.force_link='0'
+uci set network.lan.stp='1'
+uci set network.lan.igmp_snooping='1'
+
+uci delete network.vpn0
+uci delete network.wan
+uci delete network.wan6
+
+#uci set network.WAN=interface
+#uci set network.WAN.proto='pppoe'
+#uci set network.WAN.ifname='eth1'
+#uci set network.WAN.delegate='0'
+#uci set network.WAN.username='test'
+#uci set network.WAN.password='test'
+#uci set network.WAN.ipv6='0'
+#uci set network.WAN.keepalive='0'
+#uci set network.WAN.demand='0'
+
+
+uci commit network
+
+
+uci set dhcp.@dnsmasq[0]=dnsmasq
+uci set dhcp.@dnsmasq[0].domainneeded='1'
+uci set dhcp.@dnsmasq[0].localise_queries='1'
+uci set dhcp.@dnsmasq[0].local='/lan/'
+uci set dhcp.@dnsmasq[0].domain='lan'
+uci set dhcp.@dnsmasq[0].expandhosts='1'
+uci set dhcp.@dnsmasq[0].authoritative='1'
+uci set dhcp.@dnsmasq[0].readethers='1'
+uci set dhcp.@dnsmasq[0].leasefile='/tmp/dhcp.leases'
+uci set dhcp.@dnsmasq[0].localuse='1'
+uci set dhcp.@dnsmasq[0].nonwildcard='0'
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+uci set dhcp.@dnsmasq[0].quietdhcp='1'
+uci set dhcp.@dnsmasq[0].sequential_ip='1'
+uci set dhcp.@dnsmasq[0].filterwin2k='1'
+uci set dhcp.@dnsmasq[0].nonegcache='1'
+uci set dhcp.@dnsmasq[0].allservers='1'
+uci set dhcp.@dnsmasq[0].localservice='0'
+uci set dhcp.@dnsmasq[0].dns_redirect='1'
+uci set dhcp.@dnsmasq[0].rebind_protection='0'
+uci set dhcp.@dnsmasq[0].nohosts='1'
+uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
+uci set dhcp.@dnsmasq[0].cachesize='0'
+
+
+uci set dhcp.lan=dhcp
+uci set dhcp.lan.interface='lan'
+uci set dhcp.lan.start='10'
+uci set dhcp.lan.leasetime='168h'
+uci set dhcp.lan.limit='200'
+uci set dhcp.lan.dhcp_option='6,119.29.29.29,223.5.5.5'
+uci set dhcp.lan.force='1'
+
+uci commit dhcp
+
+uci delete network.vpn0
+uci commit network
+
+#uci set luci.main.mediaurlbase='/luci-static/bootstrap'
+uci set luci.diag.dns='qq.com'
+uci set luci.diag.ping='223.5.5.5'
+uci set luci.diag.route='223.5.5.5'
+uci commit luci
+
+sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
+echo "DISTRIB_REVISION=R`date +%y%m%d-%H%M%S`" >> /etc/openwrt_release
+sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
+#echo "DISTRIB_DESCRIPTION='ImmortalWrt 18.06'" >> /etc/openwrt_release
+
+uci set turboacc.config=turboacc
+uci set turboacc.config.hw_flow='0'
+uci set turboacc.config.fullcone_nat='1'
+uci set turboacc.config.dns_caching='0'
+uci set turboacc.config.bbr_cca='0'
+uci set turboacc.config.sw_flow='0'
+uci set turboacc.config.sfe_flow='0'
+uci commit turboacc
+
+
+exit 0
+
