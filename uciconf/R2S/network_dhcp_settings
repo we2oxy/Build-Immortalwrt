@@ -3,7 +3,7 @@
 #uci set network.lan=interface
 #uci set network.lan.ifname='eth1'
 uci set network.lan.delegate='0'
-uci set network.lan.ip6assign='0'
+#uci set network.lan.ip6assign='0'
 uci set network.lan.ipaddr='10.0.0.1'
 uci set network.lan.netmask='255.255.255.0'
 #uci set network.lan.dns='119.29.29.29 223.5.5.5 180.76.76.76'
@@ -74,20 +74,6 @@ uci set luci.diag.dns='qq.com'
 uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='223.5.5.5'
 uci commit luci
-
-sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION=R`date +%y%m%d-%H%M%S`" >> /etc/openwrt_release
-sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-#echo "DISTRIB_DESCRIPTION='ImmortalWrt 18.06'" >> /etc/openwrt_release
-
-uci set turboacc.config=turboacc
-uci set turboacc.config.hw_flow='0'
-uci set turboacc.config.fullcone_nat='1'
-uci set turboacc.config.dns_caching='0'
-uci set turboacc.config.bbr_cca='0'
-uci set turboacc.config.sw_flow='0'
-uci set turboacc.config.sfe_flow='0'
-uci commit turboacc
 
 exit 0
 
