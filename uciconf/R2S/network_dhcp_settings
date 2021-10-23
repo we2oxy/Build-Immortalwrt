@@ -1,31 +1,18 @@
 
 
-#uci set network.lan=interface
-#uci set network.lan.ifname='eth1'
 uci set network.lan.delegate='0'
-#uci set network.lan.ip6assign='0'
+uci set network.lan.ip6assign='0'
 uci set network.lan.ipaddr='10.0.0.1'
 uci set network.lan.netmask='255.255.255.0'
-#uci set network.lan.dns='119.29.29.29 223.5.5.5 180.76.76.76'
 uci set network.lan.force_link='0'
 uci set network.lan.stp='1'
 uci set network.lan.igmp_snooping='1'
 
 uci delete network.vpn0
-uci delete network.wan
 uci delete network.wan6
-
-#uci set network.WAN=interface
-#uci set network.WAN.proto='pppoe'
-#uci set network.WAN.ifname='eth1'
-#uci set network.WAN.delegate='0'
-#uci set network.WAN.username='test'
-#uci set network.WAN.password='test'
-#uci set network.WAN.ipv6='0'
-#uci set network.WAN.keepalive='0'
-#uci set network.WAN.demand='0'
-
-
+uci set network.lan.ipv6='0'
+uci set network.wan.ipv6='0'
+uci -q delete network.globals.ula_prefix
 uci commit network
 
 
@@ -61,15 +48,13 @@ uci set dhcp.lan.leasetime='168h'
 uci set dhcp.lan.limit='200'
 uci set dhcp.lan.dhcp_option='6,119.29.29.29,223.5.5.5'
 uci set dhcp.lan.force='1'
-
+uci set dhcp.lan.dhcpv6='disabled'
+uci -q delete dhcp.lan.dhcpv6
+uci -q delete dhcp.lan.ra
 uci commit dhcp
 
 
-uci delete network.vpn0
-uci commit network
 
-
-#uci set luci.main.mediaurlbase='/luci-static/bootstrap'
 uci set luci.diag.dns='qq.com'
 uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='223.5.5.5'
