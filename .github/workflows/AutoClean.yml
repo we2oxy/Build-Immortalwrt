@@ -1,0 +1,52 @@
+name: AutoClean
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      # artifacts:
+        # description: 'Cleanup-Old-Artifacts'
+        # required: true
+        # default: '"15d"'
+      workflow:
+        description: 'Cleanup-Workflow-Runs'
+        required: true
+        default: '15'
+      # releases:
+        # description: 'Cleanup-old-Releases'
+        # required: true
+        # default: '30'
+  schedule:
+    - cron: 0 16 1,15 * *
+    
+jobs: 
+  # Cleanup-Old-Artifacts:
+    # runs-on: ubuntu-18.04
+    # steps:
+    # - name: Cleanup Old Action Artifacts
+      # uses: kolpav/purge-artifacts-action@master
+      # with:
+        # token: ${{ github.token }}
+        # expire-in: ${{ github.event.inputs.artifacts }}
+        
+  Cleanup-Workflow-Runs:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Cleanup Workflow Runs
+        uses: GitRML/delete-workflow-runs@v1.2.1
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 15
+ 
+  # Cleanup-old-Releases:
+    # runs-on: ubuntu-18.04
+    # steps:
+      # - name: Cleanup-old-Releases
+        # uses: dev-drprasad/delete-older-releases@v0.1.0
+        # with:
+          # keep_latest: ${{ github.event.inputs.releases }}
+          # delete_tags: true
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
