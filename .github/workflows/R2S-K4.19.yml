@@ -39,7 +39,7 @@ jobs:
         sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android* 
         sudo -E apt-get update -y 
         sudo -E apt-get full-upgrade -y 
-        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804) ca-certificates
         sudo -E apt-get autoremove -y --purge 
         sudo -E apt-get clean -y 
         
