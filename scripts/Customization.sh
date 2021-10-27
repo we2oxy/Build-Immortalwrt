@@ -21,6 +21,7 @@ fun_sync_sourecode(){
 	#svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash luci-app-openclash
 	#svn update luci-app-passwall/ luci-app-ssr-plus/ luci-app-vssr/ luci-app-openclash/
 	#ls -lah luci-app-ssr-plus/ luci-app-openclash/ luci-app-passwall/  luci-app-vssr/
+	svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ /build/immortalwrt/feeds/luci/applications/luci-app-v2raya/
 	cd /build/immortalwrt/feeds/luci/themes/
 	rm -rf luci-theme-argon
 	git clone --branch 18.06  --single-branch https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
