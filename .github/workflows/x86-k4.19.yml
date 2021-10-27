@@ -64,6 +64,7 @@ jobs:
         #git clone --branch 1806-rockchip-419 --single-branch https://github.com/we2oxy/R2S-K4.19.git /build/immortalwrt
         cd /build/immortalwrt
         rm -rf tmp/
+        echo "src-git luciappv2raya https://github.com/zxlhhyccc/luci-app-v2raya.git" >> feeds.conf.default
         ./scripts/feeds update -a || ./scripts/feeds update -a
         ./scripts/feeds install -a || ./scripts/feeds install -a
         wget -O /build/immortalwrt/x64-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/x64-config.buildinfo
