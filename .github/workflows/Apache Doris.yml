@@ -52,6 +52,8 @@ jobs:
         mv apache-doris-0.15.0-incubating-src apache-doris
         sudo chown -R runner:runner /build
         cd apache-doris
+        ls -lh
+        pwd
         
     - name: Build fe be ui
       run: |
