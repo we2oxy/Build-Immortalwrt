@@ -57,6 +57,7 @@ jobs:
         
     - name: Build fe be ui
       run: |
+        cd /build/apache-doris/
         sed -i '/set -eo pipefail/d' build.sh
         cat -n build.sh
         /bin/bash -x build.sh --fe --be --ui
