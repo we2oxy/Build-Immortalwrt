@@ -28,7 +28,7 @@ function fun_del_snapshot(){
 
 function fun_del_passwd(){
 	echo -e "\n-----$FUNCNAME start-----"
-	sed -i '/CYXluq4wUazHjmCDBCqXF/d'  /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
+	sed -i '/CYXluq4wUazHjmCDBCqXF/d'  /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
 	echo -e "\n-----$FUNCNAME successful-----"
 }
 
