@@ -59,6 +59,7 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/network_dhcp_settings >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cp $GITHUB_WORKSPACE/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/99-default-settings-chinese
         sed -i 's/10.0.0.1/192.168.99.204/g' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
