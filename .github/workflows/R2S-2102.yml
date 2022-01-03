@@ -45,6 +45,7 @@ jobs:
         git clone --branch openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         cd /build/immortalwrt
         rm -rf tmp/
+        git clone -b master --depth=1 https://github.com/yichya/luci-app-xray.git package/emortal/luci-app-xray
         sh -c "./scripts/feeds update -a" || sh -c "./scripts/feeds update -a"
         sh -c "./scripts/feeds install -a" || sh -c "./scripts/feeds install -a"
         wget -O /build/immortalwrt/R2S-2102-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-2102-config.buildinfo
