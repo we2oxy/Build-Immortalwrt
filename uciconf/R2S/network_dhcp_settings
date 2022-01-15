@@ -33,15 +33,12 @@ uci set dhcp.@dnsmasq[0].quietdhcp='1'
 uci set dhcp.@dnsmasq[0].sequential_ip='1'
 uci set dhcp.@dnsmasq[0].filterwin2k='1'
 uci set dhcp.@dnsmasq[0].nonegcache='1'
-uci set dhcp.@dnsmasq[0].allservers='1'
 uci set dhcp.@dnsmasq[0].localservice='0'
 uci set dhcp.@dnsmasq[0].dns_redirect='1'
 uci set dhcp.@dnsmasq[0].rebind_protection='0'
 uci set dhcp.@dnsmasq[0].nohosts='1'
 uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
 uci set dhcp.@dnsmasq[0].cachesize='0'
-
-
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.start='10'
@@ -59,7 +56,7 @@ uci commit dhcp
 
 
 uci set luci.main.lang='zh_cn'
-uci set luci.diag.dns='qq.com'
+uci set luci.diag.dns='public1.alidns.com'
 uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='223.5.5.5'
 uci commit luci
