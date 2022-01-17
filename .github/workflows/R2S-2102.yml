@@ -46,8 +46,8 @@ jobs:
         cd /build/immortalwrt
         rm -rf tmp/
         git clone -b master --depth=1 https://github.com/yichya/luci-app-xray.git package/emortal/luci-app-xray
-        sh -c "./scripts/feeds update -a" || sh -c "./scripts/feeds update -a"
-        sh -c "./scripts/feeds install -a" || sh -c "./scripts/feeds install -a"
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
         wget -O /build/immortalwrt/R2S-2102-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-2102-config.buildinfo
         cat /build/immortalwrt/R2S-2102-config.buildinfo > "/build/immortalwrt/.config"
         
@@ -74,11 +74,7 @@ jobs:
       run: |
         echo "Defconfig immortalwrt":$(date +%F_%H%M%S)
         cd /build/immortalwrt/ && ls -lash
-        sh -c "./scripts/feeds install -a" || sh -c "./scripts/feeds install -a"
         make defconfig
-        make -j8 download || make -j1 download || make -j1 download V=s 
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
         ./scripts/diffconfig.sh > /build/buildinfo/R2S-2102-config.buildinfo
         wc -l /build/buildinfo/R2S-2102-config.buildinfo
         cat /build/buildinfo/R2S-2102-config.buildinfo

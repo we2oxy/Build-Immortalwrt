@@ -47,8 +47,8 @@ jobs:
         rm -rf tmp/
         sed -n '1s/immortalwrt/we2oxy/p' feeds.conf.default
         sed -i '1s/immortalwrt/we2oxy/' feeds.conf.default
-        sh -c "./scripts/feeds update -a" || sh -c "./scripts/feeds update -a"
-        sh -c "./scripts/feeds install -a" || sh -c "./scripts/feeds install -a"
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
         wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-config.buildinfo
         cat /build/immortalwrt/R2S-config.buildinfo > "/build/immortalwrt/.config"
         
@@ -77,11 +77,7 @@ jobs:
       run: |
         echo "Defconfig immortalwrt":$(date +%F_%H%M%S)
         cd /build/immortalwrt/ && ls -lash
-        sh -c "./scripts/feeds install -a" || sh -c "./scripts/feeds install -a"
         make defconfig
-        make -j8 download || make -j1 download || make -j1 download V=s 
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
         ./scripts/diffconfig.sh > /build/buildinfo/R2S-config.buildinfo
         wc -l /build/buildinfo/R2S-config.buildinfo
         cat /build/buildinfo/R2S-config.buildinfo

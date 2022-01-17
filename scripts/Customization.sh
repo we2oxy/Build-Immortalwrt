@@ -15,7 +15,7 @@ function fun_sync_sourecode(){
 	cd /build/immortalwrt/feeds/luci/themes/
 	rm -rf luci-theme-argon
 	git clone --branch 18.06 --single-branch https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
-	cd /build/immortalwrt/ && ./scripts/feeds install -a
+	cd /build/immortalwrt/
 	echo -e "\n-----$FUNCNAME successful-----"
 }
 
