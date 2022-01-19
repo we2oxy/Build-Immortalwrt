@@ -64,6 +64,9 @@ jobs:
         grep "Build Date" /build/immortalwrt/package/emortal/autocore/files/arm/index.htm
         sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
         sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/zzz-default-settings
+        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
         
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0

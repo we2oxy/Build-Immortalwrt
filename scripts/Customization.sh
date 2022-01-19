@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function change_network(){
+	# 交换 lan/wan 口
+	echo -e "\n-----$FUNCNAME start-----"
+	head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	echo -e "\n-----$FUNCNAME successful-----"
+}
 
 function fun_backup_defaultsettings(){
 	echo -e "\n-----$FUNCNAME start-----"
@@ -81,4 +89,3 @@ fun_sync_sourecode
 fun_import_rules
 fun_vssr
 fun_ssrplus
-

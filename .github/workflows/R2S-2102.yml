@@ -61,6 +61,9 @@ jobs:
         cp $GITHUB_WORKSPACE/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/99-default-settings-chinese
         sed -i 's/10.0.0.1/192.168.99.204/g' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
         
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
