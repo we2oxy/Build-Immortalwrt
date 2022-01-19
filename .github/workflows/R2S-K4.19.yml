@@ -133,6 +133,7 @@ jobs:
         touch release.txt
         echo "http://192.168.99.205" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
+        echo "exchange WAN&LAN!!!" >> release.txt
         #echo "::set-output name=status::success"
         echo "::set-output name=TAG_STATUS::success"
         
