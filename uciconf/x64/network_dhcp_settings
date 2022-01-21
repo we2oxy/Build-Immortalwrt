@@ -38,6 +38,7 @@ uci set dhcp.@dnsmasq[0].dns_redirect='1'
 uci set dhcp.@dnsmasq[0].rebind_protection='0'
 uci set dhcp.@dnsmasq[0].nohosts='1'
 uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
+uci set dhcp.@dnsmasq[0].addnhosts='/etc/github_hosts.txt'
 uci set dhcp.@dnsmasq[0].cachesize='0'
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
