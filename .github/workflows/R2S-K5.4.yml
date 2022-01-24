@@ -36,7 +36,8 @@ jobs:
         sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804) ca-certificates
         sudo -E apt-get autoremove -y --purge 
         sudo -E apt-get clean -y  
-        
+        ulimit -a
+        ulimit -n 2048
     - name: Clone Source
       run: |
         echo "Clone Source":$(date +%F_%H%M%S)
