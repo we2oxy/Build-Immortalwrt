@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function change_network(){
+function fun_change_network(){
 	# 交换 lan/wan 口
 	echo -e "\n-----$FUNCNAME start-----"
 	head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
@@ -43,7 +43,7 @@ function fun_del_passwd(){
 function fun_import_rules(){
 	echo -e "\n-----$FUNCNAME start-----"
 	svn co https://github.com/we2oxy/OpenWrtConfig/trunk/files/etc /build/immortalwrt/files/etc
-	curl -O /build/immortalwrt/files/etc/ssrplus/direct_microsoft.txt https://raw.githubusercontent.com/1715173329/ssrplus-routing-rules/master/direct/microsoft.txt
+	wget -O /build/immortalwrt/files/etc/ssrplus/direct_microsoft.txt https://raw.githubusercontent.com/1715173329/ssrplus-routing-rules/master/direct/microsoft.txt
 	cat /build/immortalwrt/files/etc/ssrplus/direct_microsoft.txt >> /build/immortalwrt/files/etc/ssrplus/white.list
 	rm -rf /build/immortalwrt/files/etc/.svn/
 	cp -R /build/immortalwrt/files/etc/ssrplus/ /build/immortalwrt/files/etc/vssr/
