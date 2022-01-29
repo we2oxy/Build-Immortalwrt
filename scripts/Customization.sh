@@ -45,6 +45,7 @@ function fun_import_rules(){
 	svn co https://github.com/we2oxy/OpenWrtConfig/trunk/files/etc /build/immortalwrt/files/etc
 	wget -O /build/immortalwrt/files/etc/ssrplus/direct_microsoft.txt https://raw.githubusercontent.com/1715173329/ssrplus-routing-rules/master/direct/microsoft.txt
 	cat /build/immortalwrt/files/etc/ssrplus/direct_microsoft.txt >> /build/immortalwrt/files/etc/ssrplus/white.list
+	cat /build/immortalwrt/files/etc/ssrplus/white.list
 	rm -rf /build/immortalwrt/files/etc/.svn/
 	cp -R /build/immortalwrt/files/etc/ssrplus/ /build/immortalwrt/files/etc/vssr/
 	ls -lahR /build/immortalwrt/files/
