@@ -57,7 +57,7 @@ uci commit dhcp
 
 
 uci set luci.main.lang='zh_cn'
-uci set luci.diag.dns='public1.alidns.com'
+uci set luci.diag.dns='apple.com.cn'
 uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='223.5.5.5'
 uci commit luci
