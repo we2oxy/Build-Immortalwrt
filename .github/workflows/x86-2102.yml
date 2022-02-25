@@ -8,10 +8,10 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
-  schedule:
-    - cron:  '40 17 * * 0,3'
-  watch:
-    types: started
+  # schedule:
+    # - cron:  '40 17 * * 0,3'
+  # watch:
+    # types: started
 
 jobs:
   x86-2102:
