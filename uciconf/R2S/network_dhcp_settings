@@ -5,6 +5,7 @@ uci set network.wan.proto='pppoe'
 uci set network.wan.username=''
 uci set network.wan.password=''
 
+uci delete network.lan.ip6assign
 uci delete network.vpn0
 uci delete network.wan6
 uci delete network.lan.ipv6
