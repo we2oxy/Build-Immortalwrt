@@ -50,7 +50,7 @@ jobs:
         sed -i '1s/immortalwrt/we2oxy/' feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-config.buildinfo
+        wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-k5.4-light.buildinfo
         cat /build/immortalwrt/R2S-config.buildinfo > "/build/immortalwrt/.config"
         
     - name: Configuration Customization
