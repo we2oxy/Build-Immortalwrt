@@ -37,7 +37,7 @@ jobs:
         sudo -E apt-get autoremove -y --purge 
         sudo -E apt-get clean -y  
         ulimit -a
-        ulimit -n 2048
+        ulimit -n 165535
     - name: Clone Source
       run: |
         echo "Clone Source":$(date +%F_%H%M%S)
@@ -46,8 +46,8 @@ jobs:
         git clone --branch openwrt-18.06-k5.4 --single-branch https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         cd /build/immortalwrt
         rm -rf tmp/
-        sed -n '1s/immortalwrt/we2oxy/p' feeds.conf.default
-        sed -i '1s/immortalwrt/we2oxy/' feeds.conf.default
+        #sed -n '1s/immortalwrt/we2oxy/p' feeds.conf.default
+        #sed -i '1s/immortalwrt/we2oxy/' feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-k5.4-light.buildinfo
@@ -65,9 +65,9 @@ jobs:
         sed -i "/Load Average/i\\\t\t<tr><td width="33%"><%:Build Date %></td><td>`date +%F_%T`</td></tr>" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
         grep "Build Date" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
         sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        #head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        #sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+        #head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
         
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
