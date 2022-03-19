@@ -3,9 +3,9 @@
 function fun_change_network(){
 	# 交换 lan/wan 口
 	echo -e "\n-----$FUNCNAME start-----"
-	head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-	sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-	head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	#head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	#sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+	#head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
 	echo -e "\n-----$FUNCNAME successful-----"
 }
 
@@ -18,8 +18,8 @@ function fun_backup_defaultsettings(){
 
 function fun_sync_sourecode(){
 	echo -e "\n-----$FUNCNAME start-----"
-	svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ /build/immortalwrt/package/emortal/luci-app-v2raya/
-	svn co https://github.com/QiuSimons/openwrt-mos/trunk/luci-app-mosdns /build/immortalwrt/package/emortal/luci-app-mosdns
+	#svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ /build/immortalwrt/package/emortal/luci-app-v2raya/
+	#svn co https://github.com/QiuSimons/openwrt-mos/trunk/luci-app-mosdns /build/immortalwrt/package/emortal/luci-app-mosdns
 	cd /build/immortalwrt/feeds/luci/themes/
 	rm -rf luci-theme-argon
 	git clone --branch 18.06 --single-branch https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
