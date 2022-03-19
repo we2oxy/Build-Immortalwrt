@@ -48,6 +48,7 @@ function fun_import_rules(){
 	cat /build/immortalwrt/files/etc/ssrplus/white.list
 	rm -rf /build/immortalwrt/files/etc/.svn/
 	cp -R /build/immortalwrt/files/etc/ssrplus/ /build/immortalwrt/files/etc/vssr/
+	cp /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/shadowsocksr /build/immortalwrt/files/etc/config/
 	ls -lahR /build/immortalwrt/files/
 	echo -e "\n-----$FUNCNAME successful-----"
  }
@@ -58,11 +59,8 @@ function fun_vssr(){
 	sed -i 's,ispip.clang.cn/all_cn.txt,cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt,g' /build/immortalwrt/feeds/luci/applications/luci-app-vssr/luasrc/controller/vssr.lua
 	sed -i 's,ispip.clang.cn/all_cn.txt,cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt,g' /build/immortalwrt/feeds/luci/applications/luci-app-vssr/root/usr/share/vssr/update.lua
 	echo -e "\ncheck result.fast_open /build/immortalwrt/feeds/luci/applications/luci-app-vssr/root/usr/share/vssr/subscribe.lua\n"
-	grep -C 2 "result.fast_open" /build/immortalwrt/feeds/luci/applications/luci-app-vssr/root/usr/share/vssr/subscribe.lua
 	echo -e "\ncheck raw.sevencdn.com/QiuSimons /build/immortalwrt/feeds/luci/applications/luci-app-vssr/luasrc/controller/vssr.lua\n"
-	grep -C 2 "chnroute.txt" /build/immortalwrt/feeds/luci/applications/luci-app-vssr/luasrc/controller/vssr.lua
 	echo -e "\ncheck raw.sevencdn.com/QiuSimons /build/immortalwrt/feeds/luci/applications/luci-app-vssr/root/usr/share/vssr/update.lua\n"
-	grep -C 2 "chnroute.txt" /build/immortalwrt/feeds/luci/applications/luci-app-vssr/root/usr/share/vssr/update.lua
 	echo -e "\n-----$FUNCNAME successful-----"
  }
  
@@ -74,13 +72,9 @@ function fun_ssrplus(){
 	sed -i 's,YW5vbnltb3Vz/domain-list-community/release/gfwlist.txt,Loyalsoldier/v2ray-rules-dat/release/gfw.txt,' luci-app-ssr-plus/root/etc/init.d/shadowsocksr
 	sed -i '/all_cn_cidr.txt/a\o:value("https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt", translate("QiuSimons/Chnroute"))\' luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/advanced.lua
 	echo -e "\ncheck result.fast_open root/usr/share/shadowsocksr/subscribe.lua\n"
-	grep -C 2 "result.fast_open" luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
 	echo -e "\ncheck cdn.jsdelivr.net/gh/QiuSimons root/etc/init.d/shadowsocksr\n"
-	grep -C 2 "chnroute.txt" luci-app-ssr-plus/root/etc/init.d/shadowsocksr
 	echo -e "\ncheck Loyalsoldier/v2ray-rules-dat  root/etc/init.d/shadowsocksr\n"
-	grep -C 2 "Loyalsoldier/v2ray-rules-dat"  luci-app-ssr-plus/root/etc/init.d/shadowsocksr
 	echo -e  "\ncheck translate("QiuSimons/Chnroute") luasrc/model/cbi/shadowsocksr/advanced.lua\n"
-	grep -C 2 'translate("QiuSimons/Chnroute")' luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/advanced.lua
 	echo -e "\n-----$FUNCNAME successful-----"
  }
 

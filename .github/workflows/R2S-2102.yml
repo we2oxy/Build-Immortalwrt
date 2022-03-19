@@ -50,15 +50,14 @@ jobs:
         echo "Clone Source":$(date +%F_%H%M%S)
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
-        git clone --branch openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        git clone --branch openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         cd /build/immortalwrt
         rm -rf tmp/
-        git clone -b master --depth=1 https://github.com/yichya/luci-app-xray.git package/emortal/luci-app-xray
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        wget -O /build/immortalwrt/R2S-2102-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-2102-config.buildinfo
-        cat /build/immortalwrt/R2S-2102-config.buildinfo > "/build/immortalwrt/.config"
-        
+        cat /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/buildinfo/R2S-2102-new.buildinfo > /build/immortalwrt/.config
+        sed -i 's#192.168.1.1#192.168.99.1#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        grep '192.168.99.1' /build/immortalwrt/package/base-files/files/bin/config_generate
     - name: Configuration Customization
       id: configuration
       run: |
@@ -67,11 +66,7 @@ jobs:
         sed -i '$d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/network_dhcp_settings >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cp $GITHUB_WORKSPACE/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/99-default-settings-chinese
-        sed -i 's/10.0.0.1/192.168.99.204/g' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
         
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
@@ -136,10 +131,8 @@ jobs:
         echo "::set-output name=release_tag::$(date +%F_%H%M%S)_immortalwrt-21.02-k5.4-R2S"
         echo "::set-output name=release_date::$(date +"%F_%H%M%S")"
         touch release.txt
-        echo "http://192.168.99.204" > release.txt
+        echo "http://192.168.99.1" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
-        echo "exchange WAN&LAN!!!" >> release.txt
-        #echo "::set-output name=status::success"
         echo "::set-output name=TAG_STATUS::success"
         
     - name: Upload firmware to release
