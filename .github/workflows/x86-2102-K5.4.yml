@@ -12,7 +12,7 @@ on:
     # - cron:  '40 17 * * 0,3'
 
 jobs:
-  x86-2102-K5.4:
+  x86-2102-K54:
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
