@@ -32,7 +32,7 @@ jobs:
       run: |
         sudo chmod -R +x $GITHUB_WORKSPACE/scripts/*.sh
         ls -alh $GITHUB_WORKSPACE/scripts/*.sh
-        bash $GITHUB_WORKSPACE/01_init_env.sh
+        bash $GITHUB_WORKSPACE/scripts/01_init_env.sh
         
     - name: Clone Source
       run: |
@@ -41,7 +41,7 @@ jobs:
     - name: Configuration Customization
       id: configuration
       run: |
-        bash $GITHUB_WORKSPACE/02_diy_app.sh
+        bash $GITHUB_WORKSPACE/scripts/02_diy_app.sh
         cat $GITHUB_WORKSPACE/buildinfo/R2S/R2S-2102-K5.4.buildinfo > /build/immortalwrt/.config
         
     - name: SSH connection to Actions
@@ -54,7 +54,7 @@ jobs:
     - name: Defconfig
       id: defconfig
       run: |
-        bash $GITHUB_WORKSPACE/03_defconfig.sh R2S-2102-K5.4.buildinfo
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh R2S-2102-K5.4.buildinfo
         
     - name: Deliver buildinfo
       if: ${{ always() }}
@@ -76,7 +76,7 @@ jobs:
         
     - name: Prepare artifact
       run: |
-        bash $GITHUB_WORKSPACE/04_packaging.sh
+        bash $GITHUB_WORKSPACE/scripts/04_packaging.sh
         
     - name: Deliver firmware
       if: ${{ always() }}
