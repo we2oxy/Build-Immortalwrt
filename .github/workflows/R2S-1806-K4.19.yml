@@ -37,7 +37,7 @@ jobs:
         
     - name: Clone Source
       run: |
-        bash $GITHUB_WORKSPACE/source_code/R2S-1806-K4.19.sh
+        bash $GITHUB_WORKSPACE/scripts/source_code/R2S-1806-K4.19.sh
         
     - name: Configuration Customization
       id: configuration

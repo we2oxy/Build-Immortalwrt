@@ -36,7 +36,7 @@ jobs:
         
     - name: Clone Source
       run: |
-        bash $GITHUB_WORKSPACE/source_code/immortalwrt-2102-k5.4.sh
+        bash $GITHUB_WORKSPACE/scripts/source_code/immortalwrt-2102-k5.4.sh
         
     - name: Configuration Customization
       id: configuration
