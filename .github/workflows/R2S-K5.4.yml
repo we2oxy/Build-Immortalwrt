@@ -50,15 +50,17 @@ jobs:
         echo "Clone Source":$(date +%F_%H%M%S)
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
-        git clone --branch openwrt-18.06-k5.4 --single-branch https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        git clone --branch openwrt-18.06-k5.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         cd /build/immortalwrt
         rm -rf tmp/
-        #sed -n '1s/immortalwrt/we2oxy/p' feeds.conf.default
-        #sed -i '1s/immortalwrt/we2oxy/' feeds.conf.default
+        echo "src-git ssrplus https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
         ./scripts/feeds update -a
+        rm -rf feeds/luci/themes/luci-theme-argon
+        rm -rf feeds/luci/applications/luci-app-ssr-plus
+        git clone --branch 18.06 --single-branch https://github.com/jerrykuku/luci-theme-argon.git /build/immortalwrt/feeds/luci/themes/luci-theme-argon
         ./scripts/feeds install -a
-        wget -O /build/immortalwrt/R2S-config.buildinfo https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S-k5.4-light.buildinfo
-        cat /build/immortalwrt/R2S-config.buildinfo > "/build/immortalwrt/.config"
+        cat /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/buildinfo/R2S-k5.4-light.buildinfo > /build/immortalwrt/.config
+        sed -i 's#192.168.1.1#192.168.99.1#' /build/immortalwrt/package/base-files/files/bin/config_generate
         
     - name: Configuration Customization
       id: configuration
@@ -68,14 +70,16 @@ jobs:
         sed -i '$d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/network_dhcp_settings >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cp $GITHUB_WORKSPACE/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/99-default-settings-chinese
-        sed -i 's/10.0.0.1/192.168.99.203/g' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -i "/Load Average/i\\\t\t<tr><td width="33%"><%:Build Date %></td><td>`date +%F_%T`</td></tr>" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
         grep "Build Date" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
         sed -n '/CYXluq4wUazHjmCDBCqXF/p' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        #head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        #sed -i "s,'eth1' 'eth0','eth0' 'eth1',g" /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        #head -30 /build/immortalwrt/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
-        
+        cd /build/immortalwrt/feeds/ssrplus/luci-app-ssr-plus
+        sed -i 's,ispip.clang.cn/all_cn,cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute,' root/etc/init.d/shadowsocksr
+        sed -i 's,YW5vbnltb3Vz/domain-list-community@release/gfwlist,Loyalsoldier/v2ray-rules-dat@release/gfw,' root/etc/init.d/shadowsocksr
+        sed -i '/Clang.CN.CIDR/a\o:value("https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt", translate("QiuSimons/Chnroute"))' luasrc/model/cbi/shadowsocksr/advanced.lua
+        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        cp $GITHUB_WORKSPACE/uciconf/vssr /build/immortalwrt/files/etc/config/
+        cp $GITHUB_WORKSPACE/uciconf/shadowsocksr /build/immortalwrt/files/etc/config/
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
@@ -141,7 +145,6 @@ jobs:
         touch release.txt
         echo "http://192.168.99.203" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
-        #echo "::set-output name=status::success"
         echo "::set-output name=TAG_STATUS::success"
         
     - name: Upload firmware to release
