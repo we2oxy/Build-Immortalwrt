@@ -14,7 +14,7 @@ cat /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/network_dh
 cp /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/zzz-default-settings-chinese /build/immortalwrt/package/emortal/default-settings/files/99-default-settings-chinese
 
 # del default passwd
-sed -i '#CYXluq4wUazHjmCDBCqXF#d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
 
 
 # luci-theme-argon
