@@ -99,7 +99,7 @@ jobs:
         echo "::set-output name=release_tag::$(date +%F_%H%M%S)_immortalwrt-21.02-k5.4-R2S"
         echo "::set-output name=release_date::$(date +"%F_%H%M%S")"
         touch release.txt
-        echo "http://192.168.99.1" > release.txt
+        echo "http://192.168.1.177" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
         echo "::set-output name=TAG_STATUS::success"
         
