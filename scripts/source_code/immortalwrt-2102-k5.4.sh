@@ -18,8 +18,8 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-set
 
 
 # luci-theme-argon
-rm -rf /build/immortalwrt/feeds/luci/themes/luci-theme-argon
-svn export https://github.com/jerrykuku/luci-theme-argon/branches/trunk/  /build/immortalwrt/feeds/luci/themes/luci-theme-argon
+# rm -rf /build/immortalwrt/feeds/luci/themes/luci-theme-argon
+# svn export https://github.com/jerrykuku/luci-theme-argon/branches/trunk/  /build/immortalwrt/feeds/luci/themes/luci-theme-argon
 
 # change default IP and version flag
 sed -i 's#-SNAPSHOT##g' /build/immortalwrt/include/version.mk
@@ -27,5 +27,5 @@ sed -i 's#-SNAPSHOT##g' /build/immortalwrt/package/base-files/image-config.in
 sed -i 's#192.168.1.1#192.168.1.177#' /build/immortalwrt/package/base-files/files/bin/config_generate
 
 # add build date
-sed -i "/Load Average/i\\\t\t<tr><td width="33%"><%:Build Date %></td><td>`date +%F_%T`</td></tr>" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
-grep "Build Date" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
+# sed -i "/Load Average/i\\\t\t<tr><td width="33%"><%:Build Date %></td><td>`date +%F_%T`</td></tr>" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm
+# grep "Build Date" /build/immortalwrt/package/emortal/autocore/files/generic/index.htm

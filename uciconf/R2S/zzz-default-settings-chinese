@@ -18,6 +18,12 @@ uci -q batch <<-EOF
 EOF
 uci commit system
 
+uci set luci.diag.dns='wx.qq.com'
+uci set luci.diag.ping='wx.qq.com'
+uci set luci.diag.route='wx.qq.com'
+
+uci commit luci
+
 sed -i 's,downloads.openwrt.org,mirrors.tencent.com/lede,g' /etc/opkg/distfeeds.conf
 
 exit 0
