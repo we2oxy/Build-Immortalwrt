@@ -49,7 +49,9 @@ jobs:
       id: configuration
       run: |
         bash $GITHUB_WORKSPACE/scripts/02_diy_app.sh
-        cat $GITHUB_WORKSPACE/buildinfo/R2S/R2S-1806-K5.4.buildinfo > /build/immortalwrt/.config
+        wget -O /build/immortalwrt/.config https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/R2S-1806-K5.4.buildinfo
+        cat $GITHUB_WORKSPACE/buildinfo/R2S/R2S-1806-K5.4.buildinfo
+        #cat $GITHUB_WORKSPACE/buildinfo/R2S/R2S-1806-K5.4.buildinfo > /build/immortalwrt/.config
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
