@@ -15,12 +15,6 @@ sed -i '/Clang.CN.CIDR/a\o:value("https://gh.404delivr.workers.dev/https://githu
 sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
 
 
-# luci-app-passwall
-svn export https://github.com/xiaorouji/openwrt-passwall/trunk/luci-app-passwall /build/immortalwrt/feeds/luci/applications/luci-app-passwall
-
-
-
-
 # vssr
 #svn export https://github.com/jerrykuku/luci-app-vssr/trunk/ /build/immortalwrt/feeds/luci/applications/luci-app-vssr/
 #cd /build/immortalwrt/feeds/luci/applications/luci-app-vssr/
