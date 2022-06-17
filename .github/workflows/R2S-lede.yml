@@ -63,7 +63,7 @@ jobs:
       id: configuration
       run: |
         wget -O /build/lede/.config https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/R2S.conf
-        ls -lh /build/lede/
+        ls -lha /build/lede/
         md5sum /build/lede/.config
         
     - name: Defconfig
