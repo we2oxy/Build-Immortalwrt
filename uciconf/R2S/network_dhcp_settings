@@ -42,7 +42,6 @@ uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.start='10'
 uci set dhcp.lan.leasetime='6h'
 uci set dhcp.lan.limit='100'
-uci set dhcp.lan.dhcp_option='6,202.96.134.33,202.96.134.133,202.96.128.166'
 uci set dhcp.lan.force='1'
 uci set dhcp.lan.dhcpv6='disabled'
 uci -q delete dhcp.lan.dhcpv6
