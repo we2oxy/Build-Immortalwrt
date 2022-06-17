@@ -69,6 +69,7 @@ jobs:
     - name: Defconfig
       id: defconfig
       run: |
+        cd /build/lede/
         make defconfig
         make download -j8
         ./scripts/diffconfig.sh > /build/buildinfo/R2S-lede.conf
