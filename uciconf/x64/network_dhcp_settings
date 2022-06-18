@@ -1,0 +1,78 @@
+
+
+uci set network.lan.delegate='0'
+uci set network.lan.ip6assign='0'
+uci set network.lan.ipaddr='10.0.0.1'
+uci set network.lan.netmask='255.255.255.0'
+uci set network.lan.dns='223.5.5.5 119.29.29.29'
+uci set network.lan.force_link='0'
+uci set network.lan.stp='1'
+uci set network.lan.igmp_snooping='1'
+
+uci delete network.vpn0
+uci delete network.wan6
+uci set network.lan.ipv6='0'
+uci set network.wan.ipv6='0'
+uci -q delete network.globals.ula_prefix
+uci commit network
+
+
+uci set dhcp.@dnsmasq[0]=dnsmasq
+uci set dhcp.@dnsmasq[0].domainneeded='1'
+uci set dhcp.@dnsmasq[0].localise_queries='1'
+uci set dhcp.@dnsmasq[0].local='/lan/'
+uci set dhcp.@dnsmasq[0].domain='lan'
+uci set dhcp.@dnsmasq[0].expandhosts='1'
+uci set dhcp.@dnsmasq[0].authoritative='1'
+uci set dhcp.@dnsmasq[0].readethers='1'
+uci set dhcp.@dnsmasq[0].leasefile='/tmp/dhcp.leases'
+uci set dhcp.@dnsmasq[0].localuse='1'
+uci set dhcp.@dnsmasq[0].nonwildcard='0'
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+uci set dhcp.@dnsmasq[0].quietdhcp='1'
+uci set dhcp.@dnsmasq[0].sequential_ip='1'
+uci set dhcp.@dnsmasq[0].filterwin2k='1'
+uci set dhcp.@dnsmasq[0].nonegcache='1'
+uci set dhcp.@dnsmasq[0].localservice='0'
+uci set dhcp.@dnsmasq[0].dns_redirect='0'
+uci set dhcp.@dnsmasq[0].rebind_protection='0'
+uci set dhcp.@dnsmasq[0].nohosts='1'
+uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
+uci set dhcp.@dnsmasq[0].addnhosts='/etc/github_hosts.txt'
+uci set dhcp.@dnsmasq[0].cachesize='0'
+uci set dhcp.lan=dhcp
+uci set dhcp.lan.interface='lan'
+uci set dhcp.lan.start='10'
+uci set dhcp.lan.leasetime='6h'
+uci set dhcp.lan.limit='200'
+uci set dhcp.lan.dhcp_option='3,10.0.0.1' '6,10.0.0.1,223.6.6.6,223.5.5.5'
+uci set dhcp.lan.force='1'
+uci set dhcp.lan.dhcpv6='disabled'
+uci -q delete dhcp.lan.dhcpv6
+uci -q delete dhcp.lan.ra
+uci set dhcp.@domain[0]=domain
+uci set dhcp.@domain[0].name='myroute'
+uci set dhcp.@domain[0].ip='10.0.0.1'
+uci commit dhcp
+
+
+uci set luci.main.lang='zh_cn'
+uci set luci.diag.dns='www.qq.com'
+uci set luci.diag.ping='www.qq.com'
+uci set luci.diag.route='www.qq.com'
+uci commit luci
+
+/etc/init.d/nginx stop
+/etc/init.d/nginx disable
+
+/etc/init.d/samba stop
+/etc/init.d/samba disable
+
+/etc/init.d/uhttpd start
+/etc/init.d/uhttpd enable
+
+/etc/init.d/nlbwmon stop
+/etc/init.d/nlbwmon disable
+
+exit 0
+
