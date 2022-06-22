@@ -12,6 +12,8 @@ rm -rf tmp/
 
 
 # change uci setting
+cat -n /build/lede/package/lean/default-settings/files/zzz-default-settings
+sed -i '40,43d' /build/lede/package/lean/default-settings/files/zzz-default-settings
 sed -i '$d' /build/lede/package/lean/default-settings/files/zzz-default-settings
 cat /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/R2S-lede >> /build/lede/package/lean/default-settings/files/zzz-default-settings
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/lede/package/lean/default-settings/files/zzz-default-settings
