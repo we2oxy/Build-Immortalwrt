@@ -10,6 +10,10 @@ rm -rf tmp/
 ./scripts/feeds install -a
 ./scripts/feeds install -a -f
 
+grep "PATCHVER" target/linux/rockchip/Makefile
+sed -i 's/5.15/5.4/' target/linux/rockchip/Makefile
+grep "PATCHVER" target/linux/rockchip/Makefile
+
 
 # change uci setting
 cat -n /build/lede/package/lean/default-settings/files/zzz-default-settings
