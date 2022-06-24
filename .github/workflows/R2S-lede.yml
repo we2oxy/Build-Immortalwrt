@@ -81,7 +81,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: OpenWrt_buildinfo_R2S-K5.4
+        name: OpenWrt_buildinfo_R2S
         path: /build/buildinfo/
         if-no-files-found: ignore
         
@@ -104,6 +104,8 @@ jobs:
         zip -9 -r /build/upload/packages_$(date +%F_%H%M%S).zip  packages/
         ls -lah /build/
         cd /build/upload/
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-ext4-sysupgrade.img.gz `date +%Y_%m_%d_%H%M_R2S`-ext4.img.gz
+        mv openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz `date +%Y_%m_%d_%H%M_R2S`-sqfs.img.gz
         ls -lh
         
     - name: Deliver firmware
