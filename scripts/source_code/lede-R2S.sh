@@ -6,6 +6,7 @@ git clone --depth 1 https://github.com/coolsnowwolf/lede /build/lede
 cd /build/lede
 echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
 rm -rf tmp/
+svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/vla/luci-app-openclash
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 ./scripts/feeds install -a -f
