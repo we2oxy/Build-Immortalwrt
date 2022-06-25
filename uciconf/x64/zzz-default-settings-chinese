@@ -9,11 +9,6 @@ uci -q batch <<-EOF
 	add_list system.ntp.server="cn.ntp.org.cn"
 	add_list system.ntp.server="time.apple.com"
 	add_list system.ntp.server="time.asia.apple.com"
-	add_list system.ntp.server="ntp1.tencent.com" 
-	add_list system.ntp.server="ntp2.tencent.com" 
-	add_list system.ntp.server="ntp3.tencent.com"
-	add_list system.ntp.server="ntp4.tencent.com"
-	add_list system.ntp.server="ntp5.tencent.com"
 	add_list system.ntp.server="ntp.aliyun.com"
 EOF
 uci commit system

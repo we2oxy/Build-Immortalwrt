@@ -15,13 +15,36 @@ uci -q batch <<-EOF
 	add_list system.ntp.server="ntp5.tencent.com"
 	add_list system.ntp.server="ntp.aliyun.com"
 EOF
+uci set system.@system[0].hostname='R2S'
 uci commit system
+
+uci delete network.globals.ula_prefix
+uci set network.lan.dns='127.0.0.1'
+uci set network.lan.delegate='0'
+uci commit network
+
+uci set dhcp.lan.start='10'
+uci set dhcp.lan.force='1'
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+uci set dhcp.@dnsmasq[0].filter_https='1'
+uci set dhcp.@dnsmasq[0].filter_unknown='1'
+uci set dhcp.@dnsmasq[0].sequential_ip='1'
+uci set dhcp.lan.dhcp_option='6,192.168.1.188'
+uci set dhcp
+
 
 uci set luci.diag.dns='wx.qq.com'
 uci set luci.diag.ping='wx.qq.com'
 uci set luci.diag.route='wx.qq.com'
-
+uci set luci.main.mediaurlbase='/luci-static/bootstrap'
 uci commit luci
 
+uci set shadowsocksr.@access_control[0].wan_bp_ips='17.0.0.0/8'
+uci set shadowsocksr.@global[0].chnroute_url='https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute/dist/chnroute/chnroute.txt'
+uci set shadowsocksr.@server_subscribe[0].switch='0'
+uci commit shadowsocksr
+
+uci set turboacc.config.bbr_cca='1'
+uci commit turboacc
 
 exit 0
