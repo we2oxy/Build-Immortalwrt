@@ -1,3 +1,4 @@
+echo "0 */1 * * * /usr/sbin/ntpdate time.apple.com" >> /var/spool/cron/crontabs/root
 cp /etc/firewall.user >> /tmp/
 uci -q batch <<-EOF
 	set system.@system[0].timezone='CST-8'
