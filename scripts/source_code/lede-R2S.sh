@@ -22,4 +22,4 @@ echo "####################"
 cat -n /build/lede/package/lean/default-settings/files/zzz-default-settings
 echo "####################"
 
-sed -i 's#192.168.1.1#192.168.1.188#' /build/lede/package/base-files/files/bin/config_generate
+sed -i 's#192.168.1.1#192.168.100.51#' /build/lede/package/base-files/files/bin/config_generate
