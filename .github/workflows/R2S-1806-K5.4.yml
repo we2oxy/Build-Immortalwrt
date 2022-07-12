@@ -49,7 +49,8 @@ jobs:
       id: configuration
       run: |
         bash $GITHUB_WORKSPACE/scripts/02_diy_app.sh
-        wget -O /build/immortalwrt/.config https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/R2S-1806-K5.4.buildinfo
+        #wget -O /build/immortalwrt/.config https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/R2S-1806-K5.4.buildinfo
+        wget -O /build/immortalwrt/.config https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/n-immortalwrt-R2S.buildinfo
         
     - name: Defconfig
       id: defconfig
@@ -92,7 +93,7 @@ jobs:
         echo "::set-output name=release_tag::$(date +%F_%H%M%S)_immortalwrt-18.06-k5.4-R2S"
         echo "::set-output name=release_date::$(date +"%F_%H%M%S")"
         touch release.txt
-        echo "http://192.168.1.166" > release.txt
+        echo "http://192.168.100.51" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
         echo "::set-output name=TAG_STATUS::success"
         

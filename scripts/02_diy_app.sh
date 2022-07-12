@@ -28,4 +28,4 @@ sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/us
 svn export https://github.com/we2oxy/OpenWrtConfig/trunk/files/etc /build/immortalwrt/files/etc
 cp -R /build/immortalwrt/files/etc/ssrplus/ /build/immortalwrt/files/etc/vssr/
 #cp /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/vssr /build/immortalwrt/files/etc/config/vssr
-cp /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/shadowsocksr /build/immortalwrt/files/etc/config/shadowsocksr
+#cp /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/shadowsocksr /build/immortalwrt/files/etc/config/shadowsocksr
