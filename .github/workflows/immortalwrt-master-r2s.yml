@@ -31,7 +31,6 @@ jobs:
         
     - name: Clone Source
       run: |
-        bash $GITHUB_WORKSPACE/scripts/source_code/immortalwrt-master-r2s.sh
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
         git clone --branch openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
