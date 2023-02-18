@@ -1,0 +1,136 @@
+name:  R2S-1806-K5.4
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  # schedule:
+    # - cron:  '40 16 * * 0,3'
+
+jobs:
+  R2S-1806-K54:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+    - name: Cleanup Workflow Runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 7
+        keep_minimum_runs: 5
+
+    - name: Set apt mirror
+      run: |
+        sudo cat -n /etc/apt/sources.list 
+        sudo cp /etc/apt/sources.list /etc/apt/bak-sources.list
+        printf 'http://azure.archive.ubuntu.com/ubuntu  priority:1\n' | sudo tee /etc/apt/mirrors.txt
+        curl http://mirrors.ubuntu.com/mirrors.txt | sudo tee --append /etc/apt/mirrors.txt
+        sudo sed -i 's/http:\/\/azure.archive.ubuntu.com\/ubuntu\//mirror+file:\/etc\/apt\/mirrors.txt/' /etc/apt/sources.list
+        sudo cat -n /etc/apt/sources.list
+
+    - name: Init Building Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive 
+      run: |
+        sudo chmod -R +x $GITHUB_WORKSPACE/scripts/*.sh $GITHUB_WORKSPACE/scripts/source_code/*.sh
+        ls -alhR $GITHUB_WORKSPACE/scripts/*
+        #bash $GITHUB_WORKSPACE/scripts/01_init_env.sh
+        sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        sudo lsb_release -a
+        sudo cat /etc/os-release
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        docker image prune -a -f
+        sudo -E swapoff -a
+        ulimit -n 4096
+        df -hP
+
+    - name: Clone Source
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/source_code/immortalwrt-18.06-k5.4.sh
+        
+    - name: Configuration Customization
+      id: configuration
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/02_diy_app.sh
+        cat /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/buildinfo/R2S/R2S-1806-K5.4.buildinfo > /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_findutils/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_findutils-find/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_findutils-locate/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_findutils-xargs/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_logrotate/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_lsattr/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_lsblk/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_lscpu/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_lsof/d' /build/immortalwrt/.config
+        #sed -i '/CONFIG_PACKAGE_tcpdump/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_tar/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_chattr/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_gawk/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_hwinfo/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_jq/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_less/d' /build/immortalwrt/.config
+        sed -i '/CONFIG_PACKAGE_lftp/d' /build/immortalwrt/.config
+        echo "##################.config#################"
+        cat -n /build/immortalwrt/.config
+    - name: Defconfig
+      id: defconfig
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh R2S-1806-K5.4.buildinfo
+        
+    - name: Deliver buildinfo
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: OpenWrt_buildinfo_R2S-K5.4
+        path: /build/buildinfo/
+        if-no-files-found: ignore
+        
+    - name: Compile
+      id: tools
+      run: |
+        cd /build/immortalwrt/
+        echo -e "$(nproc) thread compile"
+        make -j$(($(nproc) + 1)) || make -j1 V=s
+        tree bin/
+        tree -d bin/
+        cd /build/immortalwrt/bin/targets/rockchip/armv8 && ls -lSha
+        
+    - name: Prepare artifact
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/04_packaging.sh
+        
+    - name: Deliver firmware
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: Immortalwrt_firmware_R2S-K5.4
+        path: /build/upload/
+        if-no-files-found: ignore
+        
+    - name: Generate release tag
+      id: tag
+      run: |
+        touch release.txt
+        echo "http://192.168.100.51" > release.txt
+        echo "http://immortalwrt.lan" >> release.txt
+        echo "netmask 255.255.0.0" >> release.txt
+        echo "tag_name=Immortalwrt_Nanopi-r2s" >> $GITHUB_ENV
+        echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
+        
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ env.tag_name }}_${{ env.build_date }}
+        tag_name: ${{ env.tag_name }}_${{ env.build_date }}
+        body_path: release.txt
+        files: |
+          /build/upload/*

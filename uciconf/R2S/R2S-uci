@@ -1,0 +1,59 @@
+#!/bin/sh
+
+uci set luci.main.lang=zh_cn
+uci commit luci
+
+uci set system.@system[0].timezone=CST-8
+uci set system.@system[0].zonename=Asia/Shanghai
+uci commit system
+
+uci set network.wan.proto='pppoe'
+#uci set network.lan.netmask='255.255.0.0'
+uci commit network
+
+uci set dhcp.@dnsmasq[0].rebind_protection='0'
+uci set dhcp.lan=dhcp
+uci set dhcp.lan.interface='lan'
+uci set dhcp.lan.start='10'
+uci set dhcp.lan.leasetime='49h'
+uci set dhcp.lan.limit='200'
+uci set dhcp.lan.force='1'
+uci set dhcp.lan.dhcpv6='disabled'
+uci -q delete dhcp.lan.dhcpv6
+uci -q delete dhcp.lan.ra
+uci add_list dhcp.lan.dhcp_option='3,192.168.100.51'
+#uci add_list dhcp.lan.dhcp_option='6,192.168.100.51'
+uci commit dhcp
+
+uci -q batch <<-EOF
+	delete system.ntp.server
+	add_list system.ntp.server="ntp.tencent.com"
+	add_list system.ntp.server="cn.ntp.org.cn"
+	add_list system.ntp.server="time.apple.com"
+	add_list system.ntp.server="time.asia.apple.com"
+	add_list system.ntp.server="ntp.aliyun.com"
+EOF
+uci commit system
+
+uci set luci.main.lang='zh_cn'
+uci set luci.diag.dns='wx.qq.com'
+uci set luci.diag.ping='223.5.5.5'
+uci set luci.diag.route='wx.qq.com'
+uci commit luci
+
+uci set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/gfw.txt'
+uci set shadowsocksr.@global[0].chnroute_url='https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='17.0.0.0/8'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='139.178.128.0/18'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.0.0/19'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.36.0/22'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.48.0/20'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='192.35.50.0/24'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='205.180.175.0/24'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='63.92.224.0/19'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='65.199.22.0/23'
+uci commit shadowsocksr
+
+#sed -i 's/ash/bash/' /etc/passwd
+
+exit 0

@@ -1,0 +1,46 @@
+cp /etc/firewall.user >> /tmp/
+uci -q batch <<-EOF
+	set system.@system[0].timezone='CST-8'
+	set system.@system[0].zonename='Asia/Shanghai'
+
+	delete system.ntp.server
+	add_list system.ntp.server="ntp.tencent.com"
+	add_list system.ntp.server="cn.ntp.org.cn"
+	add_list system.ntp.server="time.apple.com"
+	add_list system.ntp.server="time.asia.apple.com"
+	add_list system.ntp.server="ntp.aliyun.com"
+	add_list system.ntp.server="ntp.ntsc.ac.cn"
+EOF
+uci set system.@system[0].hostname='openwrt'
+#uci set system.led_wan.dev='eth1'
+#uci set system.led_lan.dev='eth0'
+uci commit system
+
+#uci set network.lan.dns='127.0.0.1'
+#uci set network.lan.delegate='0'
+
+#uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+#uci set dhcp.@dnsmasq[0].filter_https='1'
+#uci set dhcp.@dnsmasq[0].filter_unknown='1'
+#uci set dhcp.@dnsmasq[0].sequential_ip='1'
+#uci set dhcp.lan.dhcp_option='6,192.168.1.188'
+#uci set dhcp.lan.start='10'
+#uci set dhcp.lan.leasetime='49h'
+#uci set dhcp.lan.limit='200'
+#uci commit dhcp
+
+
+uci set luci.diag.dns='wx.qq.com'
+uci set luci.diag.ping='223.5.5.5'
+uci set luci.diag.route='wx.qq.com'
+uci commit luci
+
+#uci set shadowsocksr.@access_control[0].wan_bp_ips='17.0.0.0/8'
+uci set shadowsocksr.@global[0].chnroute_url='https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute/dist/chnroute/chnroute.txt'
+uci set shadowsocksr.@server_subscribe[0].switch='0'
+uci commit shadowsocksr
+
+#uci set turboacc.config.bbr_cca='1'
+#uci commit turboacc
+
+exit 0

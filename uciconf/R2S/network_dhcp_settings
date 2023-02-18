@@ -1,0 +1,80 @@
+
+uci set system.@system[0].hostname='openwrt'
+uci commit system
+
+#uci set network.wan=interface
+#uci set network.wan.device='eth0'
+
+uci set network.wan.proto='pppoe'
+
+#uci set network.wan.username=''
+#uci set network.wan.password=''
+#uci delete network.lan.ip6assign
+#uci delete network.vpn0
+#uci delete network.wan6
+#uci delete network.lan.ipv6
+#uci delete network.wan.ipv6
+#uci -q delete network.globals.ula_prefix
+
+uci set network.lan.netmask='255.255.0.0'
+uci commit network
+
+
+
+#uci set dhcp.@dnsmasq[0]=dnsmasq
+#uci set dhcp.@dnsmasq[0].domainneeded='1'
+#uci set dhcp.@dnsmasq[0].localise_queries='1'
+#uci set dhcp.@dnsmasq[0].local='/lan/'
+#uci set dhcp.@dnsmasq[0].domain='lan'
+#uci set dhcp.@dnsmasq[0].expandhosts='1'
+#uci set dhcp.@dnsmasq[0].authoritative='1'
+#uci set dhcp.@dnsmasq[0].readethers='1'
+#uci set dhcp.@dnsmasq[0].leasefile='/tmp/dhcp.leases'
+#uci set dhcp.@dnsmasq[0].localuse='1'
+#uci set dhcp.@dnsmasq[0].nonwildcard='0'
+#uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+#uci set dhcp.@dnsmasq[0].quietdhcp='1'
+#uci set dhcp.@dnsmasq[0].sequential_ip='1'
+#uci set dhcp.@dnsmasq[0].filterwin2k='1'
+#uci set dhcp.@dnsmasq[0].nonegcache='1'
+#uci set dhcp.@dnsmasq[0].localservice='0'
+#uci set dhcp.@dnsmasq[0].dns_redirect='1'
+#uci set dhcp.@dnsmasq[0].rebind_protection='0'
+#uci set dhcp.@dnsmasq[0].nohosts='1'
+#uci set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.d/resolv.conf.auto'
+#uci set dhcp.@dnsmasq[0].addnhosts='/etc/github_hosts.txt'
+#uci set dhcp.@dnsmasq[0].cachesize='0'
+
+uci set dhcp.lan=dhcp
+uci set dhcp.lan.interface='lan'
+uci set dhcp.lan.force='1'
+uci set dhcp.lan.dhcpv6='disabled'
+uci -q delete dhcp.lan.dhcpv6
+uci -q delete dhcp.lan.ra
+uci add_list dhcp.lan.dhcp_option='3,192.168.100.51'
+uci add_list dhcp.lan.dhcp_option='6,192.168.100.51'
+uci commit dhcp
+
+
+uci set luci.main.lang='zh_cn'
+uci set luci.diag.dns='wx.qq.com'
+uci set luci.diag.ping='223.5.5.5'
+uci set luci.diag.route='wx.qq.com'
+uci commit luci
+
+
+uci set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/gfw.txt'
+uci set shadowsocksr.@global[0].chnroute_url='https://cdn.jsdelivr.net/gh/QiuSimons/Chnroute@master/dist/chnroute/chnroute.txt'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='17.0.0.0/8'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='139.178.128.0/18'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.0.0/19'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.36.0/22'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='144.178.48.0/20'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='192.35.50.0/24'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='205.180.175.0/24'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='63.92.224.0/19'
+uci add_list shadowsocksr.@access_control[0].wan_bp_ips='65.199.22.0/23'
+uci commit shadowsocksr
+
+exit 0
+

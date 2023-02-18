@@ -1,0 +1,147 @@
+name: immortalwrt-master-r2s
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  # schedule:
+    # - cron:  '40 16 * * 0,3'
+
+jobs:
+  immortalwrt-master-r2s:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+    - name: Cleanup Workflow Runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 3
+        
+    - name: Init Building Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive 
+      run: |
+        sudo chmod -R +x $GITHUB_WORKSPACE/scripts/*.sh
+        ls -alh $GITHUB_WORKSPACE/scripts/*.sh
+        bash $GITHUB_WORKSPACE/scripts/01_init_env.sh
+        
+    - name: Clone Source
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/source_code/immortalwrt-master-r2s.sh
+        sudo mkdir -pv /build/{package,upload,buildinfo}
+        sudo chown -R runner:runner /build
+        git clone --branch openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        cd /build/immortalwrt
+        rm -rf tmp/
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        wget https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/immortalwrt-master-r2s.buildinfo
+        cat immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
+        
+    - name: Configuration Customization
+      id: configuration
+      run: |
+        echo "
+        uci set system.@system[0].hostname='openwrt'
+        uci commit system
+
+        uci set dhcp.@dnsmasq[0].sequential_ip='1'
+        uci set dhcp.lan.start='10'
+        uci set dhcp.lan.limit='200'
+        uci set dhcp.lan.leasetime='48h'
+        uci commit dhcp
+
+        uci set luci.diag.dns=weixin.qq.com
+        uci set luci.diag.ping=223.5.5.5
+        uci set luci.diag.route=weixin.qq.com
+
+        uci commit luci
+        ">> my_sys_uci_custom.txt
+        echo "
+        uci set shadowsocksr.@global[0].run_mode='router'
+        uci set shadowsocksr.@global[0].pdnsd_enable='2'
+        uci set shadowsocksr.@global[0].enable_switch='0'
+        uci set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/gfw.txt'
+        uci set shadowsocksr.@global[0].chnroute_url='https://gh.404delivr.workers.dev/https://github.com/QiuSimons/Chnroute/raw/master/dist/chnroute/chnroute.txt'
+        uci set shadowsocksr.@server_subscribe[0].switch='0'
+        uci set shadowsocksr.@server_subscribe[0].proxy='0'
+        uci set shadowsocksr.@global[0].tunnel_forward='8.8.8.8:53'
+        uci set shadowsocksr.@server_subscribe[0].auto_update_time='12'
+        uci commit shadowsocksr
+        ">> my_ssr_uci_custom.txt
+        cat -n my_uci_custom.txt
+        cat -n my_ssr_uci_custom.txt
+        sed -i '/exit 0/r my_sys_uci_custom.txt' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        sed -i '/exit 0/r my_ssr_uci_custom.txt' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults
+        sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults
+        echo "exit 0" >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults
+        sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        cd /build/immortalwrt/feeds/luci/applications/
+        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
+
+    - name: Defconfig
+      id: defconfig
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-master-r2s.buildinfo
+        
+    - name: Deliver buildinfo
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-master-r2s-buildinfo
+        path: /build/buildinfo/
+        if-no-files-found: ignore
+        
+    - name: Compile
+      id: tools
+      run: |
+        cd /build/immortalwrt/
+        echo -e "$(nproc) thread compile"
+        make -j$(($(nproc) + 1)) || make -j1 V=s
+        tree bin/
+        tree -d bin/
+        cd /build/immortalwrt/bin/targets/rockchip/armv8 && ls -lSha
+        
+    - name: Prepare artifact
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/04_packaging.sh
+        
+    - name: Deliver firmware
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-master-r2s-firmware
+        path: /build/upload/
+        if-no-files-found: ignore
+        
+    - name: Generate release tag
+      id: tag
+      run: |
+        touch release.txt
+        echo "http://192.168.100.51" > release.txt
+        echo "http://immortalwrt.lan" >> release.txt
+        echo "netmask 255.255.0.0" >> release.txt
+        echo "tag_name=immortalwrt-master-r2s" >> $GITHUB_ENV
+        echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
+        
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ env.tag_name }}_${{ env.build_date }}
+        tag_name: ${{ env.tag_name }}_${{ env.build_date }}
+        body_path: release.txt
+        files: |
+          /build/upload/*
