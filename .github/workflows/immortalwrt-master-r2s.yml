@@ -57,11 +57,12 @@ jobs:
     - name: Configuration Customization
       id: configuration
       run: |
+        cp -v /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/my*.txt /build/immortalwrt/
+        cat -n /build/immortalwrt/my*.txt
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
-        cp -v /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/my*.txt /build/immortalwrt/
-        cat my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat /build/immortalwrt/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat /build/immortalwrt/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
