@@ -70,9 +70,8 @@ jobs:
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
-        cd /build/immortalwrt/feeds/luci/applications/
-        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
-        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
 
     - name: Defconfig
