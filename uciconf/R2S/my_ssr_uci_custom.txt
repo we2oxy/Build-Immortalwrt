@@ -1,0 +1,12 @@
+
+uci set shadowsocksr.@global[0].run_mode='router'
+uci set shadowsocksr.@global[0].pdnsd_enable='2'
+uci set shadowsocksr.@global[0].enable_switch='0'
+uci set shadowsocksr.@global[0].gfwlist_url='https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/gfw.txt'
+uci set shadowsocksr.@global[0].chnroute_url='https://gh.404delivr.workers.dev/https://github.com/QiuSimons/Chnroute/raw/master/dist/chnroute/chnroute.txt'
+uci set shadowsocksr.@server_subscribe[0].switch='0'
+uci set shadowsocksr.@server_subscribe[0].proxy='0'
+uci set shadowsocksr.@global[0].tunnel_forward='8.8.8.8:53'
+uci set shadowsocksr.@server_subscribe[0].auto_update_time='12'
+uci commit shadowsocksr
+

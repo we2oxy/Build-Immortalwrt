@@ -1,0 +1,14 @@
+uci set system.@system[0].hostname='openwrt'
+uci commit system
+
+uci set dhcp.@dnsmasq[0].sequential_ip='1'
+uci set dhcp.lan.start='10'
+uci set dhcp.lan.limit='200'
+uci set dhcp.lan.leasetime='48h'
+uci commit dhcp
+
+uci set luci.diag.dns='weixin.qq.com'
+uci set luci.diag.ping='223.5.5.5'
+uci set luci.diag.route='weixin.qq.com'
+
+uci commit luci
