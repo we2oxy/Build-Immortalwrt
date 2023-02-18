@@ -64,7 +64,7 @@ jobs:
         sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -i '/exit 0/r my_ssr_uci_custom.txt' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
-        sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults
+        sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         echo "exit 0" >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
