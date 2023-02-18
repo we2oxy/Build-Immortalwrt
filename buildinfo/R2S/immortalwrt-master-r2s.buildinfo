@@ -1,0 +1,135 @@
+CONFIG_TARGET_rockchip=y
+CONFIG_TARGET_rockchip_armv8=y
+CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r2s=y
+# CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6 is not set
+# CONFIG_IPV6 is not set
+# CONFIG_KERNEL_IPV6 is not set
+CONFIG_LIBCURL_COOKIES=y
+CONFIG_LIBCURL_CRYPTO_AUTH=y
+CONFIG_LIBCURL_FILE=y
+CONFIG_LIBCURL_FTP=y
+CONFIG_LIBCURL_HTTP=y
+CONFIG_LIBCURL_NGHTTP2=y
+CONFIG_LIBCURL_OPENSSL=y
+CONFIG_LIBCURL_PROXY=y
+CONFIG_LIBCURL_TFTP=y
+CONFIG_LIBCURL_THREADED_RESOLVER=y
+CONFIG_LIBCURL_TLS_SRP=y
+CONFIG_LIBCURL_UNIX_SOCKETS=y
+CONFIG_LIBSODIUM_MINIMAL=y
+CONFIG_PACKAGE_bash=y
+CONFIG_PACKAGE_bind-check=y
+CONFIG_PACKAGE_bind-dig=y
+CONFIG_PACKAGE_bind-dnssec=y
+CONFIG_PACKAGE_bind-host=y
+CONFIG_PACKAGE_bind-libs=y
+CONFIG_PACKAGE_bind-nslookup=y
+CONFIG_PACKAGE_bind-rndc=y
+CONFIG_PACKAGE_bind-tools=y
+CONFIG_PACKAGE_blkid=y
+CONFIG_PACKAGE_boost=y
+CONFIG_PACKAGE_boost-date_time=y
+CONFIG_PACKAGE_boost-program_options=y
+CONFIG_PACKAGE_boost-system=y
+CONFIG_PACKAGE_btrfs-progs=y
+CONFIG_PACKAGE_chinadns-ng=y
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-base64=y
+CONFIG_PACKAGE_cpulimit=y
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_ddns-go=y
+CONFIG_PACKAGE_dns2socks=y
+CONFIG_PACKAGE_dns2tcp=y
+CONFIG_PACKAGE_gzip=y
+CONFIG_PACKAGE_ip-full=y
+CONFIG_PACKAGE_ipset=y
+CONFIG_PACKAGE_ipt2socks=y
+CONFIG_PACKAGE_kmod-crypto-acompress=y
+CONFIG_PACKAGE_kmod-fs-btrfs=y
+# CONFIG_PACKAGE_kmod-ipt-offload is not set
+CONFIG_PACKAGE_kmod-lib-crc32c=y
+CONFIG_PACKAGE_kmod-lib-lzo=y
+CONFIG_PACKAGE_kmod-lib-raid6=y
+CONFIG_PACKAGE_kmod-lib-xor=y
+CONFIG_PACKAGE_kmod-lib-zlib-deflate=y
+CONFIG_PACKAGE_kmod-lib-zlib-inflate=y
+CONFIG_PACKAGE_kmod-lib-zstd=y
+# CONFIG_PACKAGE_kmod-nf-flow is not set
+# CONFIG_PACKAGE_kmod-nf-ipt6 is not set
+CONFIG_PACKAGE_libatomic=y
+CONFIG_PACKAGE_libattr=y
+CONFIG_PACKAGE_libbpf=y
+CONFIG_PACKAGE_libcap=y
+CONFIG_PACKAGE_libcurl=y
+CONFIG_PACKAGE_libelf=y
+CONFIG_PACKAGE_libev=y
+CONFIG_PACKAGE_libevent2=y
+# CONFIG_PACKAGE_libip6tc is not set
+CONFIG_PACKAGE_libipset=y
+CONFIG_PACKAGE_liblzo=y
+CONFIG_PACKAGE_libmount=y
+CONFIG_PACKAGE_libnghttp2=y
+CONFIG_PACKAGE_libreadline=y
+CONFIG_PACKAGE_libsodium=y
+CONFIG_PACKAGE_libstdcpp=y
+CONFIG_PACKAGE_libuci-lua=y
+CONFIG_PACKAGE_libudns=y
+CONFIG_PACKAGE_libuv=y
+CONFIG_PACKAGE_libwebsockets-full=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_lua-neturl=y
+CONFIG_PACKAGE_luci-app-autoreboot=y
+CONFIG_PACKAGE_luci-app-cpulimit=y
+CONFIG_PACKAGE_luci-app-ddns-go=y
+CONFIG_PACKAGE_luci-app-diskman=y
+# CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng is not set
+# CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui is not set
+CONFIG_PACKAGE_luci-app-smartdns=y
+CONFIG_PACKAGE_luci-app-ssr-plus=y
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_IPT2Socks=y
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy=y
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2=y
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server=y
+# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
+CONFIG_PACKAGE_luci-app-ttyd=y
+# CONFIG_PACKAGE_luci-app-turboacc is not set
+# CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go is not set
+# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_ShadowsocksR_Libev_Server is not set
+# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Trojan is not set
+# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray is not set
+# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin is not set
+CONFIG_PACKAGE_luci-i18n-autoreboot-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-cpulimit-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-ddns-go-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-diskman-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-smartdns-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
+CONFIG_PACKAGE_microsocks=y
+CONFIG_PACKAGE_naiveproxy=y
+CONFIG_PACKAGE_ntpdate=y
+CONFIG_PACKAGE_parted=y
+CONFIG_PACKAGE_redsocks2=y
+CONFIG_PACKAGE_resolveip=y
+CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
+CONFIG_PACKAGE_shadowsocks-rust-ssserver=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-check=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-local=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-redir=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-server=y
+CONFIG_PACKAGE_smartdns=y
+CONFIG_PACKAGE_smartmontools=y
+CONFIG_PACKAGE_tcping=y
+CONFIG_PACKAGE_trojan=y
+CONFIG_PACKAGE_ttyd=y
+CONFIG_PACKAGE_uclibcxx=y
+CONFIG_PACKAGE_vim=y
+# CONFIG_PACKAGE_wget-ssl is not set
+CONFIG_PACKAGE_xray-core=y
+CONFIG_PARTED_READLINE=y
+CONFIG_TARGET_ROOTFS_PARTSIZE=960
+CONFIG_boost-compile-visibility-hidden=y
+CONFIG_boost-runtime-shared=y
+CONFIG_boost-static-and-shared-libs=y
+CONFIG_boost-variant-release=y
