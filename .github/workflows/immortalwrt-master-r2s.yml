@@ -55,6 +55,8 @@ jobs:
         mkdir -pv /build/immortalwrt/files/etc/config/
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
         wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
+        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
+        cat /build/immortalwrt/files/etc/ssrplus/black.list
         
     - name: Configuration Customization
       id: configuration
@@ -64,6 +66,7 @@ jobs:
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat /build/immortalwrt/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat /build/immortalwrt/my_smartdns_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat /build/immortalwrt/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
