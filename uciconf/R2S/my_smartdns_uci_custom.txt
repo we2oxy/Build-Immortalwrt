@@ -64,3 +64,4 @@ uci set smartdns.@server[5].blacklist_ip='0'
 uci set smartdns.@server[5].enabled='1'
 
 uci commit smartdns
+exit 0
