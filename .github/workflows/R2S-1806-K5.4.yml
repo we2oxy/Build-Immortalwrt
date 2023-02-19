@@ -127,7 +127,6 @@ jobs:
         svn export https://github.com/pymumu/luci-app-smartdns/branches/lede /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         svn export https://github.com/immortalwrt/packages/branches/openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         # luci-app-ssr-plus
-        svn export https://github.com/pymumu/openwrt-smartdns/trunk/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
         cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus

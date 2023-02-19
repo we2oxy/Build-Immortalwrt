@@ -49,8 +49,7 @@ jobs:
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        wget -P /build/immortalwrt/ https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/immortalwrt-master-r2s.buildinfo
-        cat immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
+        cat $GITHUB_WORKSPACE/buildinfo/R2S/immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
         mkdir -pv /build/immortalwrt/files/etc/crontabs/
         mkdir -pv /build/immortalwrt/files/etc/config/
         mkdir -pv /build/immortalwrt/files/etc/ssrplus/
@@ -62,13 +61,12 @@ jobs:
     - name: Configuration Customization
       id: configuration
       run: |
-        cp -v /home/runner/work/Build-Immortalwrt/Build-Immortalwrt/uciconf/R2S/my*.txt /build/immortalwrt/
-        cat -n /build/immortalwrt/my*.txt
+        cat -n $GITHUB_WORKSPACE/uciconf/R2S/my*.txt
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
-        cat /build/immortalwrt/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat /build/immortalwrt/my_smartdns_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat /build/immortalwrt/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
