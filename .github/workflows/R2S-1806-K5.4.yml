@@ -70,7 +70,25 @@ jobs:
         sed -i '/CONFIG_PACKAGE_less/d' /build/immortalwrt/.config
         sed -i '/CONFIG_PACKAGE_lftp/d' /build/immortalwrt/.config
         echo "##################.config#################"
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        rm -rf /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
+        # del net package
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
+        # add net package
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# svn export /build/immortalwrt/feeds/packages/net/${i}" && svn export https://github.com/fw876/helloworld/trunk/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# /build/immortalwrt/feeds/packages/net/${i}" && ls -lh /build/immortalwrt/feeds/packages/net/${i} ;done
+        # luci-app-smartdns
+        svn export https://github.com/pymumu/luci-app-smartdns/branches/lede /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        svn export https://github.com/immortalwrt/packages/branches/openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        # luci-app-ssr-plus
+        svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         cat -n /build/immortalwrt/.config
+
+    - name: Configuration Customization
+      id: configuration
+      run: |
         mkdir -pv /build/immortalwrt/files/etc/crontabs/
         mkdir -pv /build/immortalwrt/files/etc/config/
         mkdir -pv /build/immortalwrt/files/etc/ssrplus/
@@ -90,6 +108,12 @@ jobs:
         sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/1806_sys_uci_custom.txt >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
+        cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
+        cd /build/immortalwrt/
+        ./scripts/feeds install -a
         # uci 50_luci-smartdns
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
@@ -99,29 +123,6 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
 
-    - name: Configuration Customization
-      id: configuration
-      run: |
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        rm -rf /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
-        # del net package
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
-        # add net package
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# svn export /build/immortalwrt/feeds/packages/net/${i}" && svn export https://github.com/fw876/helloworld/trunk/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# /build/immortalwrt/feeds/packages/net/${i}" && ls -lh /build/immortalwrt/feeds/packages/net/${i} ;done
-        # luci-app-smartdns
-        svn export https://github.com/pymumu/luci-app-smartdns/branches/lede /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        svn export https://github.com/immortalwrt/packages/branches/openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        # luci-app-ssr-plus
-        svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
-        cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
-        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
-        cd /build/immortalwrt/
-        ./scripts/feeds install -a
     - name: Defconfig
       id: defconfig
       run: |
