@@ -61,7 +61,7 @@ jobs:
     - name: Configuration Customization
       id: configuration
       run: |
-        cat -n $GITHUB_WORKSPACE/uciconf/R2S/my*.txt
+        cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         # uci 99-default-settings
@@ -78,6 +78,7 @@ jobs:
         # ip 
         sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
 
     - name: Defconfig
       id: defconfig
