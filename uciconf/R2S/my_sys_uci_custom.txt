@@ -1,6 +1,15 @@
 uci set system.@system[0].hostname='openwrt'
 uci commit system
 
+uci add_list network.lan.dns='192.168.100.51'
+uci commit network
+
+uci set dhcp.lan.force='1'
+uci set dhcp.lan.netmask='255.255.0.0'
+uci add_list dhcp.lan.dhcp_option='3,192.168.100.51' 
+uci add_list dhcp.lan.dhcp_option='6,192.168.100.51'
+uci set dhcp.@dnsmasq[0].rebind_protection='0'
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'
 uci set dhcp.@dnsmasq[0].sequential_ip='1'
 uci set dhcp.lan.start='10'
 uci set dhcp.lan.limit='200'
@@ -10,5 +19,5 @@ uci commit dhcp
 uci set luci.diag.dns='weixin.qq.com'
 uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='weixin.qq.com'
-
+uci set luci.main.lang='zh_cn'
 uci commit luci

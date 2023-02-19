@@ -49,10 +49,12 @@ jobs:
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        wget https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/immortalwrt-master-r2s.buildinfo
+        wget -P /build/immortalwrt/ https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/immortalwrt-master-r2s.buildinfo
         cat immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
         mkdir -pv /build/immortalwrt/files/etc/crontabs/
+        mkdir -pv /build/immortalwrt/files/etc/config/
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
+        wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
         
     - name: Configuration Customization
       id: configuration
@@ -73,7 +75,7 @@ jobs:
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
+
 
     - name: Defconfig
       id: defconfig
