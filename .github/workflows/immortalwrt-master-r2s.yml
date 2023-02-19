@@ -53,6 +53,7 @@ jobs:
         cat immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
         mkdir -pv /build/immortalwrt/files/etc/crontabs/
         mkdir -pv /build/immortalwrt/files/etc/config/
+        mkdir -pv /build/immortalwrt/files/etc/ssrplus/
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
         wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
