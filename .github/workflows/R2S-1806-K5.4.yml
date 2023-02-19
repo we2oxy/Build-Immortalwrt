@@ -99,14 +99,17 @@ jobs:
         sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/1806_sys_uci_custom.txt >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         # uci 50_luci-smartdns
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         echo "exit 0" >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         # uci luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         echo "exit 0" >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
 
     - name: Configuration Customization
       id: configuration
@@ -123,9 +126,8 @@ jobs:
         # luci-app-smartdns
         svn export https://github.com/pymumu/luci-app-smartdns/branches/lede /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         svn export https://github.com/immortalwrt/packages/branches/openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        svn export https://github.com/immortalwrt/packages/trunk/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        svn export https://github.com/pymumu/openwrt-smartdns/trunk/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         # luci-app-ssr-plus
+        svn export https://github.com/pymumu/openwrt-smartdns/trunk/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
         cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
