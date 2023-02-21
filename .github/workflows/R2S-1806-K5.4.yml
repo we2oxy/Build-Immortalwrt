@@ -118,7 +118,7 @@ jobs:
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
-        cp $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
         # uci luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus

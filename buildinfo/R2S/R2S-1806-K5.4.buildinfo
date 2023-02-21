@@ -198,3 +198,7 @@ CONFIG_boost-variant-release=y
 CONFIG_PACKAGE_gzip=y
 CONFIG_PACKAGE_luci-app-autoreboot=y
 CONFIG_PACKAGE_at=y
+CONFIG_PACKAGE_python3-pip=y
+CONFIG_PACKAGE_python-pip-conf=y
+CONFIG_PACKAGE_python3=y
+CONFIG_PACKAGE_wget-ssl=y
