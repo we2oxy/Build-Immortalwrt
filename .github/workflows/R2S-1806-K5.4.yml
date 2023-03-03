@@ -32,7 +32,7 @@ jobs:
         sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         sudo lsb_release -a
         sudo cat /etc/os-release
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo rm -rfv /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004)
         sudo -E apt-get -qq autoremove --purge
@@ -48,7 +48,7 @@ jobs:
         sudo chown -R runner:runner /build
         git clone --branch openwrt-18.06-k5.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         cd /build/immortalwrt
-        rm -rf tmp/
+        rm -rfv tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         cat $GITHUB_WORKSPACE/buildinfo/R2S/R2S-1806-K5.4.buildinfo > /build/immortalwrt/.config
@@ -70,26 +70,26 @@ jobs:
         sed -i '/CONFIG_PACKAGE_less/d' /build/immortalwrt/.config
         sed -i '/CONFIG_PACKAGE_lftp/d' /build/immortalwrt/.config
         echo "##################.config#################"
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-openclash
-        rm -rf /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
         # luci-app-smartdns
         git clone --branch lede --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /home/runner/luci-app-smartdns
-        cp -r /home/runner/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        cp -rv /home/runner/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         git clone --branch openwrt-18.06 --single-branch --depth 1 https://github.com/immortalwrt/packages.git /home/runner/packages-openwrt-18.06
         cp /home/runner/packages-openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        rm -rf /home/runner/packages-openwrt-18.06
+        rm -rfv /home/runner/packages-openwrt-18.06
         # luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
-        cp -r /home/runner/helloworld/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -r /home/runner/helloworld/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
+        cp -rv /home/runner/helloworld/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /home/runner/helloworld/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# /build/immortalwrt/feeds/packages/net/${i}" && ls -lh /build/immortalwrt/feeds/packages/net/${i} ;done
         # luci-app-openclash
         git clone --branch master --single-branch --depth 1 https://github.com/vernesong/OpenClash.git /home/runner/OpenClash
-        cp -r /home/runner/OpenClash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        cp -rv /home/runner/OpenClash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
         cat -n /build/immortalwrt/.config
 
     - name: Configuration Customization
@@ -114,7 +114,7 @@ jobs:
         sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/1806_sys_uci_custom.txt >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
         cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
