@@ -57,6 +57,7 @@ jobs:
         wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
         cat /build/immortalwrt/files/etc/ssrplus/black.list
+        svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-homeproxy /build/immortalwrt/feeds/luci/applications/luci-app-homeproxy
         
     - name: Configuration Customization
       id: configuration
