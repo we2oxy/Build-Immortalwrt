@@ -2,8 +2,17 @@ uci set system.@system[0].hostname='openwrt'
 uci commit system
 
 uci add_list network.lan.dns='192.168.100.51'
+uci set network.wan.proto='pppoe'
+uci delete network.globals.ula_prefix
+uci delete network.lan.ip6assign
+uci delete network.wan6
 uci commit network
 
+
+uci delete dhcp.lan.ra
+uci delete dhcp.lan.ra_management
+uci delete dhcp.lan.dhcpv6
+uci delete dhcp.lan.ndp
 uci set dhcp.lan.force='1'
 uci set dhcp.lan.netmask='255.255.0.0'
 uci add_list dhcp.lan.dhcp_option='3,192.168.100.51' 
@@ -21,4 +30,5 @@ uci set luci.diag.ping='223.5.5.5'
 uci set luci.diag.route='weixin.qq.com'
 uci set luci.main.lang='zh_cn'
 uci commit luci
+
 exit 0

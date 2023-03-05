@@ -50,16 +50,11 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         cat $GITHUB_WORKSPACE/buildinfo/R2S/immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
-        mkdir -pv /build/immortalwrt/files/etc/crontabs/
-        mkdir -pv /build/immortalwrt/files/etc/config/
-        mkdir -pv /build/immortalwrt/files/etc/ssrplus/
-        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
-        wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
-        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
-        cat /build/immortalwrt/files/etc/ssrplus/black.list
-        #svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-homeproxy /build/immortalwrt/feeds/luci/applications/luci-app-homeproxy
-        #tree /build/immortalwrt/feeds/luci/applications/luci-app-homeproxy
-        #./scripts/feeds install -a
+        # ip 
+        sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        # copy init.sh to /etc/uci-defaults/
+        for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
         
     - name: Configuration Customization
       id: configuration
@@ -70,18 +65,20 @@ jobs:
         # uci 99-default-settings
         sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
+        # ttyd
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
+        # smartdns 
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
         # uci luci-ssr-plus
+        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
+        cat /build/immortalwrt/files/etc/ssrplus/black.list
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
-        # ip 
-        sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
-        sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
-        cp -v $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
 
     - name: Defconfig
       id: defconfig
