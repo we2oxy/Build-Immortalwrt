@@ -71,15 +71,15 @@ jobs:
         sed -i '/CONFIG_PACKAGE_lftp/d' /build/immortalwrt/.config
         echo "##################.config#################"
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        #rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
-        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
+        #rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile       
         # luci-app-smartdns
-        git clone --branch lede --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /home/runner/luci-app-smartdns
-        cp -rv /home/runner/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        git clone --branch openwrt-18.06 --single-branch --depth 1 https://github.com/immortalwrt/packages.git /home/runner/packages-openwrt-18.06
-        cp /home/runner/packages-openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        rm -rfv /home/runner/packages-openwrt-18.06
+        #git clone --branch lede --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /home/runner/luci-app-smartdns
+        #cp -rv /home/runner/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        #git clone --branch openwrt-18.06 --single-branch --depth 1 https://github.com/immortalwrt/packages.git /home/runner/packages-openwrt-18.06
+        #cp /home/runner/packages-openwrt-18.06/net/smartdns/Makefile /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        #rm -rfv /home/runner/packages-openwrt-18.06
         # luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
@@ -121,10 +121,10 @@ jobs:
         cd /build/immortalwrt/
         ./scripts/feeds install -a
         # uci 50_luci-smartdns
-        sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
-        cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
-        cat -n /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
-        cp -v $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
+        #sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
+        #cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
+        #cat -n /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
+        #cp -v $GITHUB_WORKSPACE/uciconf/R2S/smartdns_custom.conf /build/immortalwrt/files/etc/config/
         # uci luci-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
