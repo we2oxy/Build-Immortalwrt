@@ -83,7 +83,8 @@ jobs:
         # luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
-        git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
+        #git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
+        git clone --branch reality --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
         cp -rv /home/runner/helloworld/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /home/runner/helloworld/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# /build/immortalwrt/feeds/packages/net/${i}" && ls -lh /build/immortalwrt/feeds/packages/net/${i} ;done
@@ -98,11 +99,7 @@ jobs:
         mkdir -pv /build/immortalwrt/files/etc/crontabs/
         mkdir -pv /build/immortalwrt/files/etc/config/
         mkdir -pv /build/immortalwrt/files/etc/ssrplus/
-        echo '
-        net.ipv6.conf.all.disable_ipv6=1
-        net.ipv6.conf.default.disable_ipv6=1
-        net.ipv6.conf.lo.disable_ipv6=1
-        '>> /build/immortalwrt/files/etc/sysctl.conf
+        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
         wget -P /build/immortalwrt/files/etc/config/ https://raw.githubusercontent.com/we2oxy/mynotebook/master/openwrt/files/etc/config/ttyd
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
@@ -119,7 +116,7 @@ jobs:
         sed -i '/CYXluq4wUazHjmCDBCqXF/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat $GITHUB_WORKSPACE/uciconf/R2S/1806_sys_uci_custom.txt >> /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
+        #rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/po/zh_Hans
         cd /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
