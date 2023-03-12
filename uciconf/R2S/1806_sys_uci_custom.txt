@@ -2,6 +2,13 @@ uci set system.@system[0].hostname='openwrt'
 uci commit system
 
 uci add_list network.lan.dns='192.168.100.51'
+uci delete network.globals.ula_prefix
+uci delete network.lan.ip6assign
+uci delete network.wan6
+uci delete dhcp.lan.ra
+uci delete dhcp.lan.ra_management
+uci delete dhcp.lan.dhcpv6
+uci delete dhcp.lan.ndp
 uci commit network
 
 uci set dhcp.lan.force='1'
