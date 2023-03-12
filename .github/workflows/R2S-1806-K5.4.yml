@@ -83,8 +83,8 @@ jobs:
         # luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo ${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
-        git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
-        #git clone --branch reality --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
+        #git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
+        git clone --branch reality --single-branch --depth 1 https://github.com/fw876/helloworld.git /home/runner/helloworld
         cp -rv /home/runner/helloworld/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /home/runner/helloworld/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# /build/immortalwrt/feeds/packages/net/${i}" && ls -lh /build/immortalwrt/feeds/packages/net/${i} ;done
