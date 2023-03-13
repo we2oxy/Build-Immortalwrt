@@ -45,6 +45,10 @@ jobs:
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
         git clone --branch openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
+        git clone --branch reality --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_reality
+        git clone --branch master --single-branch --depth 1 https://github.com/vernesong/OpenClash.git /build/openclash
+        git clone --branch master --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /build/luci-app-smartdns
         cd /build/immortalwrt
         rm -rf tmp/
         ./scripts/feeds update -a
@@ -55,6 +59,11 @@ jobs:
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
         # copy init.sh to /etc/uci-defaults/
         for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
     - name: Configuration Customization
       id: configuration
@@ -71,14 +80,22 @@ jobs:
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
         # smartdns 
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
+        cp -rf /build/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
         cat /build/immortalwrt/files/etc/ssrplus/black.list
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /build/helloworld_master/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
+        cp -rf /build/helloworld_master/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        # luci-app-openclash
+        cp -rf /build/openclash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        cd /build/immortalwrt
+        ./scripts/feeds install -a -f
 
     - name: Defconfig
       id: defconfig
