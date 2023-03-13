@@ -70,6 +70,8 @@ jobs:
         sed -i '/CONFIG_PACKAGE_less/d' /build/immortalwrt/.config
         sed -i '/CONFIG_PACKAGE_lftp/d' /build/immortalwrt/.config
         echo "##################.config#################"
+        rm -rf feeds/packages/lang/golang/golang
+        svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         #rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
@@ -121,7 +123,7 @@ jobs:
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' root/usr/share/shadowsocksr/subscribe.lua
         cd /build/immortalwrt/
-        ./scripts/feeds install -a
+        ./scripts/feeds install -a -f
         # uci 50_luci-smartdns
         #sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
         #cat $GITHUB_WORKSPACE/uciconf/R2S/my_smartdns_uci_custom.txt >> /build/immortalwrt/feeds/luci/applications/luci-app-smartdns/root/etc/uci-defaults/50_luci-smartdns
