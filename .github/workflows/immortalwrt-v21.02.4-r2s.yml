@@ -7,7 +7,7 @@ on:
     # - cron:  '40 16 * * 0,3'
 
 jobs:
-  immortalwrt-v21.02.4-r2s:
+  immortalwrt-v21-02-4-r2s:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
