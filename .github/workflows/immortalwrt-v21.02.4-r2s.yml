@@ -1,4 +1,4 @@
-name: immortalwrt-master-r2s
+name: immortalwrt-v21.02.4-r2s
 
 on:
   repository_dispatch:
@@ -7,7 +7,7 @@ on:
     # - cron:  '40 16 * * 0,3'
 
 jobs:
-  immortalwrt-master-r2s:
+  immortalwrt-v21.02.4-r2s:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
@@ -44,7 +44,7 @@ jobs:
       run: |
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
-        git clone --branch openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        git clone --branch v21.02.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         git clone --branch master --single-branch --depth 1 https://github.com/vernesong/OpenClash.git /build/openclash
         git clone --branch master --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /build/luci-app-smartdns
@@ -52,18 +52,19 @@ jobs:
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        cat $GITHUB_WORKSPACE/buildinfo/R2S/immortalwrt-master-r2s.buildinfo > /build/immortalwrt/.config
+        cat $GITHUB_WORKSPACE/buildinfo/R2S/config.seed > /build/immortalwrt/.config
         # ip 
         sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
         # copy init.sh to /etc/uci-defaults/
         for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
+        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
         rm -rf feeds/packages/lang/golang/golang
         svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
-        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        # rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
     - name: Configuration Customization
@@ -81,7 +82,11 @@ jobs:
         # smartdns 
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
         cp -rf /build/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
+        sed -n -r 's#(PKG_VERSION:=)(.*)#\141#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -n -r 's#(PKG_HASH:=)(.*)#\160a3719ec739be2cc1e11724ac049b09a75059cb#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -i -r 's#(PKG_VERSION:=)(.*)#\141#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -i -r 's#(PKG_HASH:=)(.*)#\160a3719ec739be2cc1e11724ac049b09a75059cb#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        #wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
         cat /build/immortalwrt/files/etc/ssrplus/black.list
@@ -101,13 +106,13 @@ jobs:
       id: defconfig
       run: |
         cd /build/immortalwrt
-        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-master-r2s.buildinfo
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.4-r2s.buildinfo
         
     - name: Deliver buildinfo
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: immortalwrt-master-r2s-buildinfo
+        name: immortalwrt-v21.02.4-r2s-buildinfo
         path: /build/buildinfo/
         if-no-files-found: ignore
         
@@ -129,7 +134,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: immortalwrt-master-r2s-firmware
+        name: immortalwrt-v21.02.4-r2s-firmware
         path: /build/upload/
         if-no-files-found: ignore
         
@@ -140,7 +145,7 @@ jobs:
         echo "http://192.168.100.51" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
         echo "netmask 255.255.0.0" >> release.txt
-        echo "tag_name=immortalwrt-master-r2s" >> $GITHUB_ENV
+        echo "tag_name=immortalwrt-v21.02.4-r2s" >> $GITHUB_ENV
         echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
         
     - name: Upload firmware to release
