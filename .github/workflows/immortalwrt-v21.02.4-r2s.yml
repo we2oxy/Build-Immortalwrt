@@ -84,9 +84,9 @@ jobs:
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
         cp -rf /build/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         sed -n -r 's#(PKG_VERSION:=)(.*)#\141#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        sed -n -r 's#(PKG_HASH:=)(.*)#\160a3719ec739be2cc1e11724ac049b09a75059cb#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -n -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         sed -i -r 's#(PKG_VERSION:=)(.*)#\141#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        sed -i -r 's#(PKG_HASH:=)(.*)#\160a3719ec739be2cc1e11724ac049b09a75059cb#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -i -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         #wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
