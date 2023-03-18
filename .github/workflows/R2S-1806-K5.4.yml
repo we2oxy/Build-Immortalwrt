@@ -40,8 +40,8 @@ jobs:
         svn co -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
         pushd "po2lmo"
         make po2lmo
-        rm -rf "/usr/bin/po2lmo"
-        cp -fp "po2lmo" "/usr/bin/po2lmo"
+        sudo rm -rf "/usr/bin/po2lmo"
+        sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
         popd
         docker image prune -a -f
         sudo -E swapoff -a
