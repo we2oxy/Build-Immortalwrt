@@ -59,6 +59,7 @@ jobs:
         # copy init.sh to /etc/uci-defaults/
         for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
         echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
+        ./scripts/feeds update packages
         rm -rf feeds/packages/lang/golang/golang
         svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
