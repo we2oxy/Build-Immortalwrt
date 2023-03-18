@@ -1,0 +1,161 @@
+name: immortalwrt-master-r2s
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  # schedule:
+    # - cron:  '40 16 * * 0,3'
+
+jobs:
+  immortalwrt-master-r2s:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+    - name: Cleanup Workflow Runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 3
+        
+    - name: Init Building Dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive 
+      run: |
+        sudo chmod -R +x $GITHUB_WORKSPACE/scripts/*.sh
+        ls -alh $GITHUB_WORKSPACE/scripts/*.sh
+        sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        sudo lsb_release -a
+        sudo cat /etc/os-release
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        docker image prune -a -f
+        sudo -E swapoff -a
+        ulimit -n 4096
+        df -hP
+        
+    - name: Clone Source
+      run: |
+        sudo mkdir -pv /build/{package,upload,buildinfo}
+        sudo chown -R runner:runner /build
+        git clone --branch master --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
+        git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
+        git clone --branch master --single-branch --depth 1 https://github.com/vernesong/OpenClash.git /build/openclash
+        git clone --branch master --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /build/luci-app-smartdns
+        cd /build/immortalwrt
+        rm -rf tmp/
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        cat $GITHUB_WORKSPACE/buildinfo/R2S/master.config > /build/immortalwrt/.config
+        # ip 
+        sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
+        # copy init.sh to /etc/uci-defaults/
+        for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
+        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
+        ./scripts/feeds update packages
+        rm -rf feeds/packages/lang/golang/golang
+        svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        # rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
+        
+    - name: Configuration Customization
+      id: configuration
+      run: |
+        cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        # uci 99-default-settings
+        sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
+        # ttyd
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
+        # smartdns 
+        cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
+        cp -rf /build/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        sed -n -r 's#(PKG_VERSION:=)(.*)#\141#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -n -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -i -r 's#(PKG_VERSION:=)(.*)#\141#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        sed -i -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        #wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
+        # uci luci-ssr-plus
+        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
+        cat /build/immortalwrt/files/etc/ssrplus/black.list
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,sagernet-core,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /build/helloworld_master/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
+        cp -rf /build/helloworld_master/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>/build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat -n /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        # luci-app-openclash
+        cp -rf /build/openclash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        cd /build/immortalwrt
+        ./scripts/feeds install -a -f
+
+    - name: Defconfig
+      id: defconfig
+      run: |
+        cd /build/immortalwrt
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-master-r2s.buildinfo
+        
+    - name: Deliver buildinfo
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-master-r2s-buildinfo
+        path: /build/buildinfo/
+        if-no-files-found: ignore
+        
+    - name: Compile
+      id: tools
+      run: |
+        cd /build/immortalwrt/
+        echo -e "$(nproc) thread compile"
+        make -j$(($(nproc) + 1)) || make -j1 V=s
+        tree bin/
+        tree -d bin/
+        cd /build/immortalwrt/bin/targets/rockchip/armv8 && ls -lSha
+        
+    - name: Prepare artifact
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/04_packaging.sh
+        
+    - name: Deliver firmware
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-master-r2s-firmware
+        path: /build/upload/
+        if-no-files-found: ignore
+        
+    - name: Generate release tag
+      id: tag
+      run: |
+        touch release.txt
+        echo "http://192.168.100.51" > release.txt
+        echo "http://immortalwrt.lan" >> release.txt
+        echo "netmask 255.255.0.0" >> release.txt
+        echo "tag_name=immortalwrt-master-r2s" >> $GITHUB_ENV
+        echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
+        
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ env.tag_name }}_${{ env.build_date }}
+        tag_name: ${{ env.tag_name }}_${{ env.build_date }}
+        body_path: release.txt
+        files: |
+          /build/upload/*
