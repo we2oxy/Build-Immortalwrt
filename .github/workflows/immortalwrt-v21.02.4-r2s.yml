@@ -108,6 +108,9 @@ jobs:
         cp -rf /build/openclash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
         cd /build/immortalwrt
         ./scripts/feeds install -a -f
+        #  ntpd
+        sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
+        cat -n /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
 
     - name: Defconfig
       id: defconfig
