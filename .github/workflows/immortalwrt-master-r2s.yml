@@ -58,7 +58,9 @@ jobs:
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        cat $GITHUB_WORKSPACE/buildinfo/R2S/master.config > /build/immortalwrt/.config
+        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/master.config > /build/immortalwrt/.config
+        echo "##########################################"
+        cat -n /build/immortalwrt/.config
         # ip 
         sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
