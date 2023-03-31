@@ -35,7 +35,7 @@ jobs:
         sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        #svn co -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
+        #svn export -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
         #pushd "po2lmo"
         #make po2lmo
         #sudo rm -rf "/usr/bin/po2lmo"
@@ -52,8 +52,6 @@ jobs:
         sudo chown -R runner:runner /build
         git clone --branch v21.02.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git /build/immortalwrt
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
-        git clone --branch master --single-branch --depth 1 https://github.com/vernesong/OpenClash.git /build/openclash
-        git clone --branch master --single-branch --depth 1 https://github.com/pymumu/luci-app-smartdns.git /build/luci-app-smartdns
         cd /build/immortalwrt
         rm -rf tmp/
         ./scripts/feeds update -a
@@ -69,10 +67,11 @@ jobs:
         echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
         ./scripts/feeds update packages
         rm -rf feeds/packages/lang/golang/golang
-        svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
+        svn export https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns
         # rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
@@ -90,11 +89,8 @@ jobs:
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
         # smartdns 
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
-        cp -rf /build/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        sed -n -r 's#(PKG_VERSION:=)(.*)#\141#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        sed -n -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#gp' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        sed -i -r 's#(PKG_VERSION:=)(.*)#\141#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
-        sed -i -r 's#(PKG_HASH:=)(.*)#\16ee60c4cae37b1c60f678f51595c2bc2da3ca8a1fbdcd78b3e884ec4bb2b6f27#g' /build/immortalwrt/feeds/packages/net/smartdns/Makefile
+        svn export https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/smartdns /build/immortalwrt/feeds/packages/net/smartdns
+        svn export https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         #wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
@@ -107,12 +103,12 @@ jobs:
         sed -n '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # luci-app-openclash
-        cp -rf /build/openclash/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
         cd /build/immortalwrt
         ./scripts/feeds install -a -f
         #  ntpd
-        sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
-        cat -n /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
+        #sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
+        #cat -n /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
 
     - name: Defconfig
       id: defconfig
