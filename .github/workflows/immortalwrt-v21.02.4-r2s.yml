@@ -85,6 +85,7 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
+        echo -e "search lan\nnameserver 192.168.100.51" >> /build/immortalwrt/files/etc/resolv.conf
         # ttyd
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
         # smartdns 
