@@ -125,7 +125,7 @@ jobs:
       run: |
         cd /build/immortalwrt/
         echo -e "$(nproc) thread compile"
-        make download -j8
+        make download -j50
         make tools/compile -j$(nproc) || make tools/compile -j1 V=s
         make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
         make package/feeds/luci/luci-base/compile V=99
