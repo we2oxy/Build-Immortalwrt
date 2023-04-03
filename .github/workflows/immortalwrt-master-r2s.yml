@@ -71,6 +71,8 @@ jobs:
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rf  /build/immortalwrt/feeds/packages/net/miniupnpd
+        rm -rf  /build/immortalwrt/feeds/luci/applications/luci-app-upnp
         rm -rfv /build/immortalwrt/feeds/packages/net/smartdns
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
@@ -103,6 +105,9 @@ jobs:
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # luci-app-openclash
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        # upnp
+        svn export https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd /build/immortalwrt/feeds/packages/net/miniupnpd
+        svn export https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp /build/immortalwrt/feeds/luci/applications/luci-app-upnp
         cd /build/immortalwrt
         ./scripts/feeds install -a -f
 

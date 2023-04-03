@@ -71,7 +71,9 @@ jobs:
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-upnp
         rm -rfv /build/immortalwrt/feeds/packages/net/smartdns
+        rm -rfv /build/immortalwrt/feeds/packages/net/miniupnpd
         # rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
@@ -110,6 +112,9 @@ jobs:
         #  ntpd
         #sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
+        # upnp
+        svn export https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd /build/immortalwrt/feeds/packages/net/miniupnpd
+        svn export https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp /build/immortalwrt/feeds/luci/applications/luci-app-upnp
 
     - name: Defconfig
       id: defconfig
