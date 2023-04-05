@@ -3,17 +3,8 @@ echo -e "192.168.100.51 my.op openwrt openwrt.lan\n" >> /etc/hosts
 uci set system.@system[0].hostname='openwrt'
 uci commit system
 
-#uci add_list network.lan.dns='192.168.100.51'
-#uci set network.wan.proto='pppoe'
-
-uci set network.ppp=interface
-uci set network.ppp.proto='pppoe'
-uci set network.ppp.device='eth0'
-uci set network.ppp.username=''
-uci set network.ppp.password=''
-uci set network.ppp.delegate='0'
-
-
+uci add_list network.lan.dns='192.168.100.51'
+uci set network.wan.proto='pppoe'
 uci delete network.globals.ula_prefix
 uci delete network.lan.ip6assign
 uci delete network.wan6
