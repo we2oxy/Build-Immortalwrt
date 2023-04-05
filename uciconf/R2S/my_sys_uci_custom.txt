@@ -1,3 +1,5 @@
+echo -e "192.168.100.51 my.op openwrt openwrt.lan\n" >> /etc/hosts
+
 uci set system.@system[0].hostname='openwrt'
 uci commit system
 
