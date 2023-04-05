@@ -68,13 +68,13 @@ jobs:
         ./scripts/feeds update packages
         rm -rf feeds/packages/lang/golang/golang
         svn export https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
-        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
-        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
+        rm -rf /build/immortalwrt/feeds/luci/applications/luci-app-openclash
         rm -rf  /build/immortalwrt/feeds/packages/net/miniupnpd
         rm -rf  /build/immortalwrt/feeds/luci/applications/luci-app-upnp
-        rm -rfv /build/immortalwrt/feeds/packages/net/smartdns
-        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
+        rm -rf /build/immortalwrt/feeds/packages/net/smartdns
+        for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -rf /build/immortalwrt/feeds/packages/net/${i} ;done
         
     - name: Configuration Customization
       id: configuration
