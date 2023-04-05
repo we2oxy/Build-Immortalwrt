@@ -141,9 +141,9 @@ jobs:
 
 
     - name: Defconfig
-      shell: bash
       id: defconfig
       run: |
+        cd $BUILD_DIR
         ./scripts/feeds install -a -f
         bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.4-r2s.buildinfo
         
