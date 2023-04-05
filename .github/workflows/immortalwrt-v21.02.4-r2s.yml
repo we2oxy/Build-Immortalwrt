@@ -21,7 +21,7 @@ jobs:
         repository: ${{ github.repository }}
         retain_days: 1
 
-    - uses: dev-drprasad/delete-older-releases@v0.2
+    - uses: dev-drprasad/delete-older-releases@v0.2.1
       with:
         keep_latest: 12
         delete_tags: true
