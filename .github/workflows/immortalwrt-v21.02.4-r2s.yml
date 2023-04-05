@@ -19,11 +19,11 @@ jobs:
       with:
         token: ${{ github.token }}
         repository: ${{ github.repository }}
-        retain_days: 3
+        retain_days: 1
 
-    - uses: dev-drprasad/delete-older-releases@v0.2.0
+    - uses: dev-drprasad/delete-older-releases@v0.2
       with:
-        keep_latest: 2
+        keep_latest: 12
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       
@@ -42,12 +42,12 @@ jobs:
         sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        #svn export -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
-        #pushd "po2lmo"
-        #make po2lmo
-        #sudo rm -rf "/usr/bin/po2lmo"
-        #sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
-        #popd
+        svn export -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
+        pushd "po2lmo"
+        make po2lmo
+        sudo rm -rf "/usr/bin/po2lmo"
+        sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
+        popd
         docker image prune -a -f
         sudo -E swapoff -a
         ulimit -n 4096
@@ -61,26 +61,44 @@ jobs:
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         cd /build/immortalwrt
         rm -rf tmp/
+        sed -n 's/Os/O2/gp' include/target.mk
+        sed -i 's/Os/O2/g' include/target.mk
+        sed -n 's,-mcpu=generic,-mcpu=cortex-a53+crypto,gp' include/target.mk
+        sed -i 's,-mcpu=generic,-mcpu=cortex-a53+crypto,g' include/target.mk
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/config.seed > /build/immortalwrt/.config
+        sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' /build/immortalwrt/.config
+        echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" >> /build/immortalwrt/.config
         echo "#############################################"
         cat -n /build/immortalwrt/.config
         # ip 
         sed -i 's#192.168.1.1#192.168.100.51#' /build/immortalwrt/package/base-files/files/bin/config_generate
         sed -i 's#255.255.255.0#255.255.0.0#' /build/immortalwrt/package/base-files/files/bin/config_generate
-        # copy init.sh to /etc/uci-defaults/
+        # init /etc/uci-defaults/
         for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv /build/immortalwrt/files/etc/${i} ;done
         echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'>> /build/immortalwrt/files/etc/sysctl.conf
+        # uci 99-default-settings
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
+        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
+        wget -P /build/immortalwrt/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        wget -P /build/immortalwrt/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
         ./scripts/feeds update packages
-        rm -rf feeds/packages/lang/golang/golang
+        rm -rf /build/immortalwrt/feeds/packages/lang/golang/golang
         svn export https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
+        # luci
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-openclash
         rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-upnp
+        rm -rfv /build/immortalwrt/feeds/luci/applications/luci-app-v2raya
+        # packages
         rm -rfv /build/immortalwrt/feeds/packages/net/smartdns
         rm -rfv /build/immortalwrt/feeds/packages/net/miniupnpd
+        rm -rfv /build/immortalwrt/feeds/packages/net/v2raya
         # rm -rfv /build/immortalwrt/feeds/packages/net/smartdns/Makefile
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -vrf /build/immortalwrt/feeds/packages/net/${i} ;done
         
@@ -88,23 +106,19 @@ jobs:
       id: configuration
       run: |
         cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
-        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        # uci 99-default-settings
-        sed -i '/exit 0/d' /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>/build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        cat -n /build/immortalwrt/package/emortal/default-settings/files/99-default-settings
-        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" >/build/immortalwrt/files/etc/crontabs/root
-        echo -e "search lan\nnameserver 192.168.100.51" >> /build/immortalwrt/files/etc/resolv.conf
         # ttyd
         cp -v $GITHUB_WORKSPACE/uciconf/R2S/ttyd /build/immortalwrt/files/etc/config/
         # smartdns 
-        cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
+        #cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf /build/immortalwrt/files/etc/smartdns/
         svn export https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/smartdns /build/immortalwrt/feeds/packages/net/smartdns
         svn export https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns /build/immortalwrt/feeds/luci/applications/luci-app-smartdns
-        #wget -P /build/immortalwrt/feeds/packages/net/smartdns/ https://raw.githubusercontent.com/pymumu/openwrt-smartdns/master/Makefile
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >/build/immortalwrt/files/etc/ssrplus/black.list
+        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > /build/immortalwrt/files/etc/ssrplus/white.list
+        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> /build/immortalwrt/files/etc/ssrplus/white.list
+        sed -i 's/full://g' /build/immortalwrt/files/etc/ssrplus/white.list
         cat /build/immortalwrt/files/etc/ssrplus/black.list
+        cat /build/immortalwrt/files/etc/ssrplus/white.list
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,lua-neturl,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "# copy to /build/immortalwrt/feeds/packages/net/${i}" && cp -rv /build/helloworld_master/${i} /build/immortalwrt/feeds/packages/net/${i} ;done
         cp -rf /build/helloworld_master/luci-app-ssr-plus /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus
         sed -i '/exit 0/d' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
@@ -114,19 +128,22 @@ jobs:
         sed -i '/result.encrypt_method/a\                result.fast_open = "1"' /build/immortalwrt/feeds/luci/applications/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # luci-app-openclash
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash /build/immortalwrt/feeds/luci/applications/luci-app-openclash
-        cd /build/immortalwrt
-        ./scripts/feeds install -a -f
         #  ntpd
-        #sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
+        sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n /build/immortalwrt/feeds/packages/net/ntpd/files/ntpdate.init
         # upnp
         svn export https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd /build/immortalwrt/feeds/packages/net/miniupnpd
         svn export https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp /build/immortalwrt/feeds/luci/applications/luci-app-upnp
+        # v2raya
+        svn export https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ feeds/luci/applications/luci-app-v2raya
+        svn export https://github.com/openwrt/packages/branches/openwrt-21.02/net/v2raya feeds/packages/net/v2raya
+
 
     - name: Defconfig
       id: defconfig
       run: |
         cd /build/immortalwrt
+        ./scripts/feeds install -a -f
         bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.4-r2s.buildinfo
         
     - name: Deliver buildinfo
@@ -142,7 +159,6 @@ jobs:
       run: |
         cd /build/immortalwrt/
         echo -e "$(nproc) thread compile"
-        make download -j50
         #make tools/compile -j$(nproc) || make tools/compile -j1 V=s
         #make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
         #make package/feeds/luci/luci-base/compile V=99
