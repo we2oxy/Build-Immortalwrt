@@ -68,13 +68,9 @@ jobs:
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         cd $BUILD_DIR
         rm -rf tmp/
-        sed -n -e 's/Os/O2/gp' -e 's,-mcpu=generic,-mcpu=cortex-a53+crypto,gp' include/target.mk
-        sed -i -e 's/Os/O2/g'  -e 's,-mcpu=generic,-mcpu=cortex-a53+crypto,g' include/target.mk
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/config.seed |tee $BUILD_DIR/.config
-        sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' $BUILD_DIR/.config
-        echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
         echo "#############################################"
         cat -n $BUILD_DIR/.config
         # ip 
