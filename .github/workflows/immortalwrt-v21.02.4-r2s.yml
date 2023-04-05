@@ -70,7 +70,7 @@ jobs:
         ./scripts/feeds install -a
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/config.seed |tee /build/immortalwrt/.config
         sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' /build/immortalwrt/.config
-        echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee /build/immortalwrt/.config
+        echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a /build/immortalwrt/.config
         echo "#############################################"
         cat -n /build/immortalwrt/.config
         # ip 
