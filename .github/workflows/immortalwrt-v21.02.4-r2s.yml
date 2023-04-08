@@ -139,7 +139,7 @@ jobs:
         svn export https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         svn export https://github.com/openwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
         # telnet
-        svm export https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
+        svn export https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
 
     - name: Defconfig
       id: defconfig
