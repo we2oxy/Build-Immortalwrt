@@ -88,9 +88,11 @@ jobs:
         rm -rf $LUCI_APP_DIR/luci-app-openclash
         rm -rf $LUCI_APP_DIR/luci-app-upnp
         rm -rf $LUCI_APP_DIR/luci-app-v2raya
+        ls -lh $LUCI_APP_DIR/
         rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
         rm -rf $BUILD_DIR/feeds/packages/net/smartdns
         rm -rf $BUILD_DIR/feeds/packages/net/v2raya
+        ls -lh $BUILD_DIR/feeds/packages/net/
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do rm -rf $BUILD_DIR/feeds/packages/net/${i} ;done
         
     - name: Configuration Customization
