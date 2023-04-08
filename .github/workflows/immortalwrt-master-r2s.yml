@@ -160,6 +160,7 @@ jobs:
       run: |
         cd $BUILD_DIR/
         make download -j8
+        find dl -size -1024c -exec ls -l {} \;
         echo -e "$(nproc) thread compile"
         make -j$(($(nproc) + 1)) || make -j1 V=s
         tree bin/

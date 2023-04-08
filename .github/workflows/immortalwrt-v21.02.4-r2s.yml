@@ -162,6 +162,8 @@ jobs:
       id: tools
       run: |
         echo -e "$(nproc) thread compile"
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
         make tools/compile -j$(nproc) || make tools/compile -j$(nproc)
         make toolchain/compile -j$(nproc) || make toolchain/compile -j$(nproc)
         make target/compile -j$(nproc) || make target/compile -j$(nproc) IGNORE_ERRORS=1
