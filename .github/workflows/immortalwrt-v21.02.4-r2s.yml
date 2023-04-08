@@ -168,6 +168,9 @@ jobs:
         make diffconfig
         make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j$(nproc) IGNORE_ERRORS=1
         make package/index
+        make package/install -j$(nproc) || make package/install -j1 V=s
+        make target/install -j$(nproc) || make target/install -j1 V=s
+        make checksum
         tree bin/
         tree -d bin/
         cd $BUILD_DIR/bin/targets/rockchip/armv8 && ls -lSha
