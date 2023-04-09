@@ -37,7 +37,7 @@ uci set v2raya.config.enabled='1'
 uci set v2raya.config.v2ray_bin='/usr/bin/xray'
 uci commit v2raya
 
-ln -s /etc/geoip.dat /usr/share/xray/geoip.dat
-ln -s /etc/geosite.dat /usr/share/xray/geosite.dat
+chmod +x /usr/bin/nali
+echo -e "export NALI_DB_IP4=geoip\nexport NALI_HOME=/tmp/nali" >> /etc/bash.bashrc
 
 exit 0
