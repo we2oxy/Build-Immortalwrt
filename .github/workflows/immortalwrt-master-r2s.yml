@@ -106,6 +106,8 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt |tee -a $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" |tee $BUILD_DIR/files/etc/crontabs/root
+        wget -P $BUILD_DIR/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        wget -P $BUILD_DIR/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
         # ttyd
         cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
         # smartdns 
@@ -133,9 +135,9 @@ jobs:
         svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
         # v2raya
         svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
-        svn co https://github.com/openwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
+        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
         # telnet
-        svn co https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
+        #svn co https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
         cd $BUILD_DIR
         ./scripts/feeds install -a -f
 
