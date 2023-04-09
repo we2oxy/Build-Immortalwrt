@@ -88,6 +88,7 @@ jobs:
         sed -i -e 's#192.168.1.1#192.168.100.51#'  -e 's#255.255.255.0#255.255.0.0#' $BUILD_DIR/package/base-files/files/bin/config_generate
         # copy init.sh to /etc/uci-defaults/
         for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv $BUILD_DIR/files/etc/${i} ;done
+        mkdir -pv $BUILD_DIR/files/usr/share/xray/ $BUILD_DIR/files/tmp/nali $BUILD_DIR/files/usr/bin/
         echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1' |tee -a $BUILD_DIR/files/etc/sysctl.conf
         ./scripts/feeds update packages
         rm -rf feeds/packages/lang/golang/golang
@@ -115,8 +116,11 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt |tee -a $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" |tee $BUILD_DIR/files/etc/crontabs/root
-        wget -P $BUILD_DIR/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-        wget -P $BUILD_DIR/files/etc/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+        wget -P $BUILD_DIR/files/usr/bin/ -O nali.gz https://github.com/zu1k/nali/releases/download/v0.7.1/nali-linux-armv8-v0.7.1.gz
+        gzip -d $BUILD_DIR/files/usr/bin/nali.gz
+        chmod +x $BUILD_DIR/files/usr/bin/nali && ll $BUILD_DIR/files/usr/bin/nali
         # ttyd
         cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
         # smartdns 
@@ -145,6 +149,7 @@ jobs:
         # v2raya
         svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
+        echo -e '# add /etc/ini/d/v2raya start_service() \n# procd_append_param command --v2ray-bin="/usr/bin/xray"\n# procd_append_param env V2RAYA_V2RAY_BIN="/usr/bin/xray"' | tee $BUILD_DIR/files/etc/init_v2raya
         # telnet
         #svn co https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
         cd $BUILD_DIR

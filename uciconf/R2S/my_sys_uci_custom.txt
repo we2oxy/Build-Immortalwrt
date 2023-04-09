@@ -33,4 +33,11 @@ uci set luci.diag.route='weixin.qq.com'
 uci set luci.main.lang='zh_cn'
 uci commit luci
 
+uci set v2raya.config.enabled='1'
+uci set v2raya.config.v2ray_bin='/usr/bin/xray'
+uci commit v2raya
+
+ln -s /etc/geoip.dat /usr/share/xray/geoip.dat
+ln -s /etc/geosite.dat /usr/share/xray/geosite.dat
+
 exit 0
