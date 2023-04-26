@@ -116,6 +116,7 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt |tee -a $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w" |tee $BUILD_DIR/files/etc/crontabs/root
+        echo "0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
         wget -P $BUILD_DIR/files/usr/bin/ -O nali.gz https://github.com/zu1k/nali/releases/download/v0.7.1/nali-linux-armv8-v0.7.1.gz
@@ -139,8 +140,8 @@ jobs:
         sed -i '/exit 0/d' $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>$LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
-        sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
-        sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        #sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        #sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # luci-app-openclash
         svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
         # upnp
