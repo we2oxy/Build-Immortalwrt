@@ -1,4 +1,4 @@
-name: immortalwrt-v21.02.4-r2s
+name: immortalwrt-v21.02-r2s
 
 on:
   repository_dispatch:
@@ -10,7 +10,7 @@ env:
   LUCI_APP_DIR: /build/immortalwrt/feeds/luci/applications
 
 jobs:
-  immortalwrt-v21-02-4-r2s:
+  immortalwrt-v21-02-r2s:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
@@ -64,7 +64,8 @@ jobs:
       run: |
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
-        git clone --branch v21.02.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
+        #git clone --branch v21.02.6 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
+        git clone --branch v21.02.6 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         cd $BUILD_DIR
         rm -rf tmp/
@@ -73,6 +74,7 @@ jobs:
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/config.seed |tee $BUILD_DIR/.config
         #sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' $BUILD_DIR/.config
         #echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
+        sed -i '/upnp/d' $BUILD_DIR/.config
         echo "#############################################"
         cat -n $BUILD_DIR/.config
         # ip 
@@ -90,9 +92,9 @@ jobs:
         echo "0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-        wget -P $BUILD_DIR/files/usr/bin/ -O nali.gz https://github.com/zu1k/nali/releases/download/v0.7.1/nali-linux-armv8-v0.7.1.gz
-        gzip -d $BUILD_DIR/files/usr/bin/nali.gz
-        chmod +x $BUILD_DIR/files/usr/bin/nali && ll $BUILD_DIR/files/usr/bin/nali
+        #wget -P $BUILD_DIR/files/usr/bin/ -O nali.gz https://github.com/zu1k/nali/releases/download/v0.7.1/nali-linux-armv8-v0.7.1.gz
+        #gzip -d $BUILD_DIR/files/usr/bin/nali.gz
+        #chmod +x $BUILD_DIR/files/usr/bin/nali && ll $BUILD_DIR/files/usr/bin/nali
         ./scripts/feeds update packages
         rm -rf $BUILD_DIR/feeds/packages/lang/golang/golang
         svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
@@ -100,11 +102,11 @@ jobs:
         rm -rf $LUCI_APP_DIR/luci-app-ssr-plus
         rm -rf $LUCI_APP_DIR/luci-app-smartdns
         rm -rf $LUCI_APP_DIR/luci-app-openclash
-        rm -rf $LUCI_APP_DIR/luci-app-upnp
+        # rm -rf $LUCI_APP_DIR/luci-app-upnp
         rm -rf $LUCI_APP_DIR/luci-app-v2raya
         # packages
         rm -rf $BUILD_DIR/feeds/packages/net/smartdns
-        rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
+        # rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
         rm -rf $BUILD_DIR/feeds/packages/net/v2raya
         # rm -rf $BUILD_DIR/feeds/packages/net/smartdns/Makefile
         for i in {chinadns-ng,dns2socks,dns2tcp,hysteria,ipt2socks,microsocks,naiveproxy,redsocks2,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan,v2ray-core,v2ray-geodata,v2ray-plugin,v2raya,xray-core,xray-plugin} ;do echo "now rm -rf ${i}" && rm -rf $BUILD_DIR/feeds/packages/net/${i} ;done
@@ -140,8 +142,8 @@ jobs:
         sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         # upnp
-        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
-        svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
+        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
+        # svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
         # v2raya
         svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
@@ -154,13 +156,13 @@ jobs:
       run: |
         cd $BUILD_DIR
         ./scripts/feeds install -a -f
-        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.4-r2s.buildinfo
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.6-r2s.buildinfo
         
     - name: Deliver buildinfo
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: immortalwrt-v21.02.4-r2s-buildinfo
+        name: immortalwrt-v21.02.6-r2s-buildinfo
         path: /build/buildinfo/
         if-no-files-found: ignore
         
@@ -195,7 +197,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: immortalwrt-v21.02.4-r2s-firmware
+        name: immortalwrt-v21.02.6-r2s-firmware
         path: /build/upload/
         if-no-files-found: ignore
         
@@ -206,7 +208,7 @@ jobs:
         echo "http://192.168.100.51" > release.txt
         echo "http://immortalwrt.lan" >> release.txt
         echo "netmask 255.255.0.0" >> release.txt
-        echo "tag_name=immortalwrt-v21.02.4-r2s" >> $GITHUB_ENV
+        echo "tag_name=immortalwrt-v21.02.6-r2s" >> $GITHUB_ENV
         echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
         
     - name: Upload firmware to release
