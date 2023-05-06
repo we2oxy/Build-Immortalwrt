@@ -125,7 +125,7 @@ jobs:
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >$BUILD_DIR/files/etc/ssrplus/black.list
         curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
-        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/white.list
+        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
         sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
         cat $BUILD_DIR/files/etc/ssrplus/black.list
         cat $BUILD_DIR/files/etc/ssrplus/white.list
