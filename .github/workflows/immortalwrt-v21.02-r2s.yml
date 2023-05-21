@@ -144,10 +144,8 @@ jobs:
         # v2raya
         svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
-        echo -e '# add /etc/ini/d/v2raya start_service() \n# procd_append_param command --v2ray-bin="/usr/bin/xray"\n# procd_append_param env V2RAYA_V2RAY_BIN="/usr/bin/xray"' | tee $BUILD_DIR/files/etc/init_v2raya
         # custom
-        sed -i -e '/openclash/d' -e '/turboacc/d' $BUILD_DIR/.config
-        echo -e "CONFIG_PACKAGE_luci-app-upnp=y\nCONFIG_PACKAGE_miniupnpd=y" >> $BUILD_DIR/.config
+        sed -i -e '/openclash/d' $BUILD_DIR/.config
 
     - name: Defconfig
       id: defconfig
