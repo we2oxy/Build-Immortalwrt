@@ -72,8 +72,8 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/config.seed |tee $BUILD_DIR/.config
-        #sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' $BUILD_DIR/.config
-        #echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
+        sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' $BUILD_DIR/.config
+        echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
         sed -i '/upnp/d' $BUILD_DIR/.config
         echo "#############################################"
         cat -n $BUILD_DIR/.config
@@ -92,9 +92,6 @@ jobs:
         echo "0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-        #wget -P $BUILD_DIR/files/usr/bin/ -O nali.gz https://github.com/zu1k/nali/releases/download/v0.7.1/nali-linux-armv8-v0.7.1.gz
-        #gzip -d $BUILD_DIR/files/usr/bin/nali.gz
-        #chmod +x $BUILD_DIR/files/usr/bin/nali && ll $BUILD_DIR/files/usr/bin/nali
         ./scripts/feeds update packages
         rm -rf $BUILD_DIR/feeds/packages/lang/golang/golang
         svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
@@ -142,14 +139,15 @@ jobs:
         sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         # upnp
-        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
-        # svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
+        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
+        svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
         # v2raya
         svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
         echo -e '# add /etc/ini/d/v2raya start_service() \n# procd_append_param command --v2ray-bin="/usr/bin/xray"\n# procd_append_param env V2RAYA_V2RAY_BIN="/usr/bin/xray"' | tee $BUILD_DIR/files/etc/init_v2raya
-        # telnet
-        # svn co https://github.com/openwrt/packages/branches/openwrt-22.03/net/telnet-bsd $BUILD_DIR/feeds/packages/net/telnet-bsd
+        # custom
+        sed -i -e '/openclash/d' -e '/turboacc/d' $BUILD_DIR/.config
+        echo -e "CONFIG_PACKAGE_luci-app-upnp=y\nCONFIG_PACKAGE_miniupnpd=y" >> $BUILD_DIR/.config
 
     - name: Defconfig
       id: defconfig
