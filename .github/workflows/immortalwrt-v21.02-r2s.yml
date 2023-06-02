@@ -68,8 +68,6 @@ jobs:
         git clone --branch v21.02.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         cd $BUILD_DIR
-        wget -P $BUILD_DIR/target/linux/rockchip/patches-5.4/ "https://github.com/openwrt/openwrt/blob/openwrt-22.03/target/linux/generic/backport-5.10/610-v5.13-57-netfilter-flowtable-Set-offload-timeouts-according-t.patch"
-        ls -lh $BUILD_DIR/target/linux/rockchip/patches-5.4/
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
@@ -182,7 +180,6 @@ jobs:
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
         # custom
         sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d;/openclash/d;/upnp/d' $BUILD_DIR/.config
-        sed -i '/# CONFIG_PACKAGE_TURBOACC/d' $BUILD_DIR/.config
 
     - name: Defconfig
       id: defconfig
