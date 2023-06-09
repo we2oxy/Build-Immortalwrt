@@ -64,13 +64,14 @@ jobs:
       run: |
         sudo mkdir -pv /build/{package,upload,buildinfo}
         sudo chown -R runner:runner /build
-        git clone --branch openwrt-23.05 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
+        git clone --branch v23.05.0-rc1 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
         git clone --branch master --single-branch --depth 1 https://github.com/fw876/helloworld.git /build/helloworld_master
         cd $BUILD_DIR
         rm -rf tmp/
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/2305_config.seed |tee $BUILD_DIR/.config
+        # curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/2305_config.seed |tee $BUILD_DIR/.config
+        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/dae.seed |tee $BUILD_DIR/.config
         # sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d' $BUILD_DIR/.config
         # echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
         echo "#############################################"
