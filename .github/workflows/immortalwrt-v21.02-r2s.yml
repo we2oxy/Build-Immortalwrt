@@ -141,7 +141,7 @@ jobs:
         # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
         # sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
         cat $BUILD_DIR/files/etc/ssrplus/black.list
-        cat $BUILD_DIR/files/etc/ssrplus/white.list
+        # cat $BUILD_DIR/files/etc/ssrplus/white.list
         cp -rf /build/helloworld_master/chinadns-ng	        $BUILD_DIR/feeds/packages/net/chinadns-ng
         cp -rf /build/helloworld_master/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
         cp -rf /build/helloworld_master/dns2tcp	                $BUILD_DIR/feeds/packages/net/dns2tcp
