@@ -87,7 +87,7 @@ jobs:
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>$BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
         echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w"|tee $BUILD_DIR/files/etc/crontabs/root
-        echo "0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
+        echo "#0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
         ./scripts/feeds update packages
@@ -98,31 +98,31 @@ jobs:
         rm -rf $LUCI_APP_DIR/luci-app-smartdns
         rm -rf $LUCI_APP_DIR/luci-app-openclash
         # rm -rf $LUCI_APP_DIR/luci-app-upnp
-        rm -rf $LUCI_APP_DIR/luci-app-v2raya
+        # rm -rf $LUCI_APP_DIR/luci-app-v2raya
         # ** update packages
         rm -rf $BUILD_DIR/feeds/packages/net/smartdns
         # rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
-        rm -rf $BUILD_DIR/feeds/packages/net/v2raya
+        # rm -rf $BUILD_DIR/feeds/packages/net/v2raya
         # rm -rf $BUILD_DIR/feeds/packages/net/smartdns/Makefile
-        # rm -rf  $BUILD_DIR/feeds/packages/net/chinadns-ng
-        # rm -rf  $BUILD_DIR/feeds/packages/net/dns2socks
-        # rm -rf  $BUILD_DIR/feeds/packages/net/dns2tcp
-        # rm -rf  $BUILD_DIR/feeds/packages/net/hysteria
-        # rm -rf  $BUILD_DIR/feeds/packages/net/ipt2socks
-        # rm -rf  $BUILD_DIR/feeds/packages/net/microsocks
-        # rm -rf  $BUILD_DIR/feeds/packages/net/naiveproxy
-        # rm -rf  $BUILD_DIR/feeds/packages/net/redsocks2
-        # rm -rf  $BUILD_DIR/feeds/packages/net/shadowsocks-rust
-        # rm -rf  $BUILD_DIR/feeds/packages/net/shadowsocksr-libev
-        # rm -rf  $BUILD_DIR/feeds/packages/net/simple-obfs
-        # rm -rf  $BUILD_DIR/feeds/packages/net/tcping
-        # rm -rf  $BUILD_DIR/feeds/packages/net/trojan
-        # rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-core
-        # rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-geodata
-        # rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-plugin
-        # rm -rf  $BUILD_DIR/feeds/packages/net/v2raya
-        # rm -rf  $BUILD_DIR/feeds/packages/net/xray-core
-        # rm -rf  $BUILD_DIR/feeds/packages/net/xray-plugin
+        rm -rf  $BUILD_DIR/feeds/packages/net/chinadns-ng
+        rm -rf  $BUILD_DIR/feeds/packages/net/dns2socks
+        rm -rf  $BUILD_DIR/feeds/packages/net/dns2tcp
+        rm -rf  $BUILD_DIR/feeds/packages/net/hysteria
+        rm -rf  $BUILD_DIR/feeds/packages/net/ipt2socks
+        rm -rf  $BUILD_DIR/feeds/packages/net/microsocks
+        rm -rf  $BUILD_DIR/feeds/packages/net/naiveproxy
+        rm -rf  $BUILD_DIR/feeds/packages/net/redsocks2
+        rm -rf  $BUILD_DIR/feeds/packages/net/shadowsocks-rust
+        rm -rf  $BUILD_DIR/feeds/packages/net/shadowsocksr-libev
+        rm -rf  $BUILD_DIR/feeds/packages/net/simple-obfs
+        rm -rf  $BUILD_DIR/feeds/packages/net/tcping
+        rm -rf  $BUILD_DIR/feeds/packages/net/trojan
+        rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-core
+        rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-geodata
+        rm -rf  $BUILD_DIR/feeds/packages/net/v2ray-plugin
+        rm -rf  $BUILD_DIR/feeds/packages/net/v2raya
+        rm -rf  $BUILD_DIR/feeds/packages/net/xray-core
+        rm -rf  $BUILD_DIR/feeds/packages/net/xray-plugin
         
     - name: Configuration Customization
       shell: bash
@@ -132,54 +132,54 @@ jobs:
         # ttyd
         cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
         # smartdns 
-        #cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
+        # cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/smartdns $BUILD_DIR/feeds/packages/net/smartdns
         svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns $LUCI_APP_DIR/luci-app-smartdns
         # uci luci-ssr-plus
         curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >$BUILD_DIR/files/etc/ssrplus/black.list
-        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
-        curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
-        sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
+        # sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
         cat $BUILD_DIR/files/etc/ssrplus/black.list
         cat $BUILD_DIR/files/etc/ssrplus/white.list
-        # cp -rf	/build/helloworld_master/chinadns-ng	      $BUILD_DIR/feeds/packages/net/chinadns-ng
-        # cp -rf	/build/helloworld_master/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
-        # cp -rf	/build/helloworld_master/dns2tcp	          $BUILD_DIR/feeds/packages/net/dns2tcp
-        # cp -rf	/build/helloworld_master/hysteria	          $BUILD_DIR/feeds/packages/net/hysteria
-        # cp -rf	/build/helloworld_master/ipt2socks	        $BUILD_DIR/feeds/packages/net/ipt2socks
-        # cp -rf	/build/helloworld_master/lua-neturl	        $BUILD_DIR/feeds/packages/net/lua-neturl
-        # cp -rf	/build/helloworld_master/microsocks	        $BUILD_DIR/feeds/packages/net/microsocks
-        # cp -rf	/build/helloworld_master/naiveproxy	        $BUILD_DIR/feeds/packages/net/naiveproxy
-        # cp -rf	/build/helloworld_master/redsocks2	        $BUILD_DIR/feeds/packages/net/redsocks2
-        # cp -rf	/build/helloworld_master/shadowsocks-rust	  $BUILD_DIR/feeds/packages/net/shadowsocks-rust
-        # cp -rf	/build/helloworld_master/shadowsocksr-libev	$BUILD_DIR/feeds/packages/net/shadowsocksr-libev
-        # cp -rf	/build/helloworld_master/simple-obfs	      $BUILD_DIR/feeds/packages/net/simple-obfs
-        # cp -rf	/build/helloworld_master/tcping	            $BUILD_DIR/feeds/packages/net/tcping
-        # cp -rf	/build/helloworld_master/trojan	            $BUILD_DIR/feeds/packages/net/trojan
-        # cp -rf	/build/helloworld_master/v2ray-core	        $BUILD_DIR/feeds/packages/net/v2ray-core
-        # cp -rf	/build/helloworld_master/v2ray-geodata	    $BUILD_DIR/feeds/packages/net/v2ray-geodata
-        # cp -rf	/build/helloworld_master/v2ray-plugin	      $BUILD_DIR/feeds/packages/net/v2ray-plugin
-        # cp -rf	/build/helloworld_master/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
-        # cp -rf	/build/helloworld_master/xray-plugin	      $BUILD_DIR/feeds/packages/net/xray-plugin
-        cp -rf /build/helloworld_master/luci-app-ssr-plus $LUCI_APP_DIR/luci-app-ssr-plus
+        cp -rf /build/helloworld_master/chinadns-ng	        $BUILD_DIR/feeds/packages/net/chinadns-ng
+        cp -rf /build/helloworld_master/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
+        cp -rf /build/helloworld_master/dns2tcp	                $BUILD_DIR/feeds/packages/net/dns2tcp
+        cp -rf /build/helloworld_master/hysteria	        $BUILD_DIR/feeds/packages/net/hysteria
+        cp -rf /build/helloworld_master/ipt2socks	        $BUILD_DIR/feeds/packages/net/ipt2socks
+        cp -rf /build/helloworld_master/lua-neturl	        $BUILD_DIR/feeds/packages/net/lua-neturl
+        cp -rf /build/helloworld_master/microsocks	        $BUILD_DIR/feeds/packages/net/microsocks
+        cp -rf /build/helloworld_master/naiveproxy	        $BUILD_DIR/feeds/packages/net/naiveproxy
+        cp -rf /build/helloworld_master/redsocks2	        $BUILD_DIR/feeds/packages/net/redsocks2
+        cp -rf /build/helloworld_master/shadowsocks-rust        $BUILD_DIR/feeds/packages/net/shadowsocks-rust
+        cp -rf /build/helloworld_master/shadowsocksr-libev	$BUILD_DIR/feeds/packages/net/shadowsocksr-libev
+        cp -rf /build/helloworld_master/simple-obfs	        $BUILD_DIR/feeds/packages/net/simple-obfs
+        cp -rf /build/helloworld_master/tcping	                $BUILD_DIR/feeds/packages/net/tcping
+        cp -rf /build/helloworld_master/trojan	                $BUILD_DIR/feeds/packages/net/trojan
+        cp -rf /build/helloworld_master/v2ray-core	        $BUILD_DIR/feeds/packages/net/v2ray-core
+        cp -rf /build/helloworld_master/v2ray-geodata	        $BUILD_DIR/feeds/packages/net/v2ray-geodata
+        cp -rf /build/helloworld_master/v2ray-plugin	        $BUILD_DIR/feeds/packages/net/v2ray-plugin
+        cp -rf /build/helloworld_master/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
+        cp -rf /build/helloworld_master/xray-plugin	        $BUILD_DIR/feeds/packages/net/xray-plugin
+        cp -rf /build/helloworld_master/luci-app-ssr-plus       $LUCI_APP_DIR/luci-app-ssr-plus
         sed -i '/exit 0/d' $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>$LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat -n $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
-        #sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
-        #sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        # sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        # sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # luci-app-openclash
         svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
         #  ntpd
         sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         # upnp
-        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
-        svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
+        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
+        # svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
         # v2raya
-        svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
-        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
+        # svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
+        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
         # custom
-        sed -i '/CONFIG_BUSYBOX_DEFAULT_FEATURE_IPV6/d;/CONFIG_IPV6/d;/CONFIG_KERNEL_IPV6/d;/openclash/d;/upnp/d' $BUILD_DIR/.config
+        sed -i '/openclash/d;/upnp/d' $BUILD_DIR/.config
 
     - name: Defconfig
       id: defconfig
