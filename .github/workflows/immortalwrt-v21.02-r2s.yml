@@ -66,48 +66,15 @@ jobs:
         sudo chown -R runner:runner /build
         # git clone --branch v21.02.6 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
         git clone --branch v21.02.4 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
-        git clone --branch master --single-branch https://github.com/immortalwrt/packages.git $BUILD_DIR/packages_master
+        svn co https://github.com/fw876/helloworld/trunk/ $BUILD_DIR/helloworld
         cd $BUILD_DIR
         rm -rf tmp/
-        sed -i "/helloworld/d" "feeds.conf.default"
-        echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
         ./scripts/feeds update -a
-        ./scripts/feeds install -a
-        ./scripts/feeds update helloworld
-        ./scripts/feeds install -a -f -p helloworld
-        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/21.02.4_config.seed |tee $BUILD_DIR/.config
-        # echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
-        # **cat dafault build config
-        cat -n $BUILD_DIR/.config
-        # **modify default ip
-        sed -n -e 's#192.168.1.1#192.168.100.51#p' -e 's#255.255.255.0#255.255.0.0#p' $BUILD_DIR/package/base-files/files/bin/config_generate
-        sed -i -e 's#192.168.1.1#192.168.100.51#'  -e 's#255.255.255.0#255.255.0.0#' $BUILD_DIR/package/base-files/files/bin/config_generate
-        # ** init /etc/uci-defaults/
-        for i in {crontabs,config,ssrplus,smartdns,uci-defaults};do mkdir -pv $BUILD_DIR/files/etc/${i} ;done
-        mkdir -pv $BUILD_DIR/files/usr/share/xray/ $BUILD_DIR/files/tmp/nali $BUILD_DIR/files/usr/bin/
-        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'|tee $BUILD_DIR/files/etc/sysctl.conf
-        # **uci 99-default-settings
-        sed -i '/exit 0/d' $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
-        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>$BUILD_DIR/package/emortal/default-settings/files/99-default-settings
-        cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
-        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w"|tee $BUILD_DIR/files/etc/crontabs/root
-        echo "#0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
-        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-        ./scripts/feeds update packages
+        # ** update golang
         rm -rf $BUILD_DIR/feeds/packages/lang/golang
-        cp -rf $BUILD_DIR/packages_master/lang/golang $BUILD_DIR/feeds/packages/lang/golang
-        # ** update luci app
-        rm -rf $LUCI_APP_DIR/luci-app-ssr-plus
-        rm -rf $LUCI_APP_DIR/luci-app-smartdns
-        rm -rf $LUCI_APP_DIR/luci-app-openclash
-        # rm -rf $LUCI_APP_DIR/luci-app-upnp
-        # rm -rf $LUCI_APP_DIR/luci-app-v2raya
+        svn co https://github.com/immortalwrt/packages/trunk/lang/golang feeds/packages/lang/golang
         # ** update packages
         rm -rf $BUILD_DIR/feeds/packages/net/smartdns
-        # rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
-        # rm -rf $BUILD_DIR/feeds/packages/net/v2raya
-        # rm -rf $BUILD_DIR/feeds/packages/net/smartdns/Makefile
         rm -rf $BUILD_DIR/feeds/packages/net/chinadns-ng
         rm -rf $BUILD_DIR/feeds/packages/net/dns2socks
         rm -rf $BUILD_DIR/feeds/packages/net/dns2tcp
@@ -127,25 +94,16 @@ jobs:
         rm -rf $BUILD_DIR/feeds/packages/net/v2raya
         rm -rf $BUILD_DIR/feeds/packages/net/xray-core
         rm -rf $BUILD_DIR/feeds/packages/net/xray-plugin
-        
-    - name: Configuration Customization
-      shell: bash
-      id: configuration
-      run: |
-        cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
-        # ttyd
-        cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
+        # ** update luci app
+        rm -rf $LUCI_APP_DIR/luci-app-ssr-plus
+        rm -rf $LUCI_APP_DIR/luci-app-smartdns
+        rm -rf $LUCI_APP_DIR/luci-app-openclash
         # smartdns 
         # cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
         svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/smartdns $BUILD_DIR/feeds/packages/net/smartdns
         svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns $LUCI_APP_DIR/luci-app-smartdns
-        # uci luci-ssr-plus
-        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >$BUILD_DIR/files/etc/ssrplus/black.list
-        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
-        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
-        # sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
-        cat $BUILD_DIR/files/etc/ssrplus/black.list
-        # cat $BUILD_DIR/files/etc/ssrplus/white.list
+        # luci-app-openclash
+        svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
         cp -rf $BUILD_DIR/feeds/helloworld/chinadns-ng	        $BUILD_DIR/feeds/packages/net/chinadns-ng
         cp -rf $BUILD_DIR/feeds/helloworld/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
         cp -rf $BUILD_DIR/feeds/helloworld/dns2tcp	        $BUILD_DIR/feeds/packages/net/dns2tcp
@@ -166,13 +124,52 @@ jobs:
         cp -rf $BUILD_DIR/feeds/helloworld/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
         cp -rf $BUILD_DIR/feeds/helloworld/xray-plugin	        $BUILD_DIR/feeds/packages/net/xray-plugin
         cp -rf $BUILD_DIR/feeds/helloworld/luci-app-ssr-plus    $LUCI_APP_DIR/luci-app-ssr-plus
+        ./scripts/feeds install -a
+        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/21.02.4_config.seed |tee $BUILD_DIR/.config
+        # echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
+        # **cat dafault build config
+        sed -i '/openclash/d;/upnp/d' $BUILD_DIR/.config
+        cat -n $BUILD_DIR/.config
+        # **modify default ip
+        sed -n -e 's#192.168.1.1#192.168.100.51#p' -e 's#255.255.255.0#255.255.0.0#p' $BUILD_DIR/package/base-files/files/bin/config_generate
+        sed -i -e 's#192.168.1.1#192.168.100.51#'  -e 's#255.255.255.0#255.255.0.0#' $BUILD_DIR/package/base-files/files/bin/config_generate
+        # ** init /etc/uci-defaults/
+        mkdir -pv $BUILD_DIR/files/etc/{crontabs,config,ssrplus,smartdns,uci-defaults}
+        mkdir -pv $BUILD_DIR/files/usr/share/xray/ $BUILD_DIR/files/tmp/nali $BUILD_DIR/files/usr/bin/
+        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'|tee $BUILD_DIR/files/etc/sysctl.conf
+        # **uci 99-default-settings
+        sed -i '/exit 0/d' $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>$BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w"|tee $BUILD_DIR/files/etc/crontabs/root
+        echo "#0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+        # rm -rf $LUCI_APP_DIR/luci-app-upnp
+        # rm -rf $LUCI_APP_DIR/luci-app-v2raya
+        # ** update packages
+        # rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
+        # rm -rf $BUILD_DIR/feeds/packages/net/v2raya
+        # rm -rf $BUILD_DIR/feeds/packages/net/smartdns/Makefile
+    - name: Configuration Customization
+      shell: bash
+      id: configuration
+      run: |
+        cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
+        # ttyd
+        cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
+        # uci luci-ssr-plus
+        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >$BUILD_DIR/files/etc/ssrplus/black.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
+        # sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
+        cat $BUILD_DIR/files/etc/ssrplus/black.list
+        # cat $BUILD_DIR/files/etc/ssrplus/white.list
         sed -i '/exit 0/d' $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>$LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         # cat -n $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
         # sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
         # sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
-        # luci-app-openclash
-        svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
         #  ntpd
         sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
         #cat -n $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
@@ -182,8 +179,6 @@ jobs:
         # v2raya
         # svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
         # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
-        # custom
-        sed -i '/openclash/d;/upnp/d' $BUILD_DIR/.config
 
     - name: Defconfig
       id: defconfig
