@@ -104,26 +104,26 @@ jobs:
         svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns $LUCI_APP_DIR/luci-app-smartdns
         # luci-app-openclash
         svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
-        cp -rf $BUILD_DIR/feeds/helloworld/chinadns-ng	        $BUILD_DIR/feeds/packages/net/chinadns-ng
-        cp -rf $BUILD_DIR/feeds/helloworld/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
-        cp -rf $BUILD_DIR/feeds/helloworld/dns2tcp	        $BUILD_DIR/feeds/packages/net/dns2tcp
-        cp -rf $BUILD_DIR/feeds/helloworld/hysteria	        $BUILD_DIR/feeds/packages/net/hysteria
-        cp -rf $BUILD_DIR/feeds/helloworld/ipt2socks	        $BUILD_DIR/feeds/packages/net/ipt2socks
-        cp -rf $BUILD_DIR/feeds/helloworld/lua-neturl	        $BUILD_DIR/feeds/packages/net/lua-neturl
-        cp -rf $BUILD_DIR/feeds/helloworld/microsocks	        $BUILD_DIR/feeds/packages/net/microsocks
-        cp -rf $BUILD_DIR/feeds/helloworld/naiveproxy	        $BUILD_DIR/feeds/packages/net/naiveproxy
-        cp -rf $BUILD_DIR/feeds/helloworld/redsocks2	        $BUILD_DIR/feeds/packages/net/redsocks2
-        cp -rf $BUILD_DIR/feeds/helloworld/shadowsocks-rust     $BUILD_DIR/feeds/packages/net/shadowsocks-rust
-        cp -rf $BUILD_DIR/feeds/helloworld/shadowsocksr-libev	$BUILD_DIR/feeds/packages/net/shadowsocksr-libev
-        cp -rf $BUILD_DIR/feeds/helloworld/simple-obfs	        $BUILD_DIR/feeds/packages/net/simple-obfs
-        cp -rf $BUILD_DIR/feeds/helloworld/tcping	        $BUILD_DIR/feeds/packages/net/tcping
-        cp -rf $BUILD_DIR/feeds/helloworld/trojan	        $BUILD_DIR/feeds/packages/net/trojan
-        cp -rf $BUILD_DIR/feeds/helloworld/v2ray-core	        $BUILD_DIR/feeds/packages/net/v2ray-core
-        cp -rf $BUILD_DIR/feeds/helloworld/v2ray-geodata	$BUILD_DIR/feeds/packages/net/v2ray-geodata
-        cp -rf $BUILD_DIR/feeds/helloworld/v2ray-plugin	        $BUILD_DIR/feeds/packages/net/v2ray-plugin
-        cp -rf $BUILD_DIR/feeds/helloworld/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
-        cp -rf $BUILD_DIR/feeds/helloworld/xray-plugin	        $BUILD_DIR/feeds/packages/net/xray-plugin
-        cp -rf $BUILD_DIR/feeds/helloworld/luci-app-ssr-plus    $LUCI_APP_DIR/luci-app-ssr-plus
+        cp -rf $BUILD_DIR/helloworld/chinadns-ng	$BUILD_DIR/feeds/packages/net/chinadns-ng
+        cp -rf $BUILD_DIR/helloworld/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
+        cp -rf $BUILD_DIR/helloworld/dns2tcp	        $BUILD_DIR/feeds/packages/net/dns2tcp
+        cp -rf $BUILD_DIR/helloworld/hysteria	        $BUILD_DIR/feeds/packages/net/hysteria
+        cp -rf $BUILD_DIR/helloworld/ipt2socks	        $BUILD_DIR/feeds/packages/net/ipt2socks
+        cp -rf $BUILD_DIR/helloworld/lua-neturl	        $BUILD_DIR/feeds/packages/net/lua-neturl
+        cp -rf $BUILD_DIR/helloworld/microsocks	        $BUILD_DIR/feeds/packages/net/microsocks
+        cp -rf $BUILD_DIR/helloworld/naiveproxy	        $BUILD_DIR/feeds/packages/net/naiveproxy
+        cp -rf $BUILD_DIR/helloworld/redsocks2	        $BUILD_DIR/feeds/packages/net/redsocks2
+        cp -rf $BUILD_DIR/helloworld/shadowsocks-rust   $BUILD_DIR/feeds/packages/net/shadowsocks-rust
+        cp -rf $BUILD_DIR/helloworld/shadowsocksr-libev	$BUILD_DIR/feeds/packages/net/shadowsocksr-libev
+        cp -rf $BUILD_DIR/helloworld/simple-obfs	$BUILD_DIR/feeds/packages/net/simple-obfs
+        cp -rf $BUILD_DIR/helloworld/tcping	        $BUILD_DIR/feeds/packages/net/tcping
+        cp -rf $BUILD_DIR/helloworld/trojan	        $BUILD_DIR/feeds/packages/net/trojan
+        cp -rf $BUILD_DIR/helloworld/v2ray-core	        $BUILD_DIR/feeds/packages/net/v2ray-core
+        cp -rf $BUILD_DIR/helloworld/v2ray-geodata	$BUILD_DIR/feeds/packages/net/v2ray-geodata
+        cp -rf $BUILD_DIR/helloworld/v2ray-plugin	$BUILD_DIR/feeds/packages/net/v2ray-plugin
+        cp -rf $BUILD_DIR/helloworld/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
+        cp -rf $BUILD_DIR/helloworld/xray-plugin	$BUILD_DIR/feeds/packages/net/xray-plugin
+        cp -rf $BUILD_DIR/helloworld/luci-app-ssr-plus  $LUCI_APP_DIR/luci-app-ssr-plus
         ./scripts/feeds install -a
         curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/21.02.4_config.seed |tee $BUILD_DIR/.config
         # echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
