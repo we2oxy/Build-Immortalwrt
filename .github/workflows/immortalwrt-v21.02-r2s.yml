@@ -95,8 +95,8 @@ jobs:
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
         ./scripts/feeds update packages
-        rm -rf $BUILD_DIR/feeds/packages/lang/golang/golang
-        cp -rf $BUILD_DIR/packages_master/lang/golang $BUILD_DIR/feeds/packages/lang/
+        rm -rf $BUILD_DIR/feeds/packages/lang/golang
+        cp -rf $BUILD_DIR/packages_master/lang/golang $BUILD_DIR/feeds/packages/lang/golang
         # ** update luci app
         rm -rf $LUCI_APP_DIR/luci-app-ssr-plus
         rm -rf $LUCI_APP_DIR/luci-app-smartdns
