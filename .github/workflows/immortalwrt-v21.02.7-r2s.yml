@@ -1,0 +1,252 @@
+name: immortalwrt-v21.02.7-r2s
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  # schedule:
+    # - cron:  '40 16 * * 0,3'
+env:
+  BUILD_DIR: /build/immortalwrt
+  LUCI_APP_DIR: /build/immortalwrt/feeds/luci/applications
+
+jobs:
+  immortalwrt-v21-02-r2s:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      
+    - name: Cleanup Workflow Runs
+      uses: Mattraks/delete-workflow-runs@v2.0.3
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    - uses: dev-drprasad/delete-older-releases@v0.2.1
+      with:
+        keep_latest: 12
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       
+
+    - name: Init Building Dependencies
+      shell: bash
+      env:
+        DEBIAN_FRONTEND: noninteractive 
+      run: |
+        sudo chmod -R +x $GITHUB_WORKSPACE/scripts/*.sh
+        ls -alh $GITHUB_WORKSPACE/scripts/*.sh
+        sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        sudo lsb_release -a
+        sudo cat /etc/os-release
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004) $(cat $GITHUB_WORKSPACE/immortalwrt-build-dependencies)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        svn co -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
+        pushd "po2lmo"
+        make po2lmo
+        sudo rm -rf "/usr/bin/po2lmo"
+        sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
+        popd
+        docker image prune -a -f
+        sudo -E swapoff -a
+        ulimit -n 4096
+        df -hP
+        
+    - name: Clone Source
+      shell: bash
+      working-directory: /home/runner
+      run: |
+        sudo mkdir -pv /build/{package,upload,buildinfo}
+        sudo chown -R runner:runner /build
+        # git clone --branch v21.02.6 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
+        git clone --branch v21.02.7 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git $BUILD_DIR
+        svn co https://github.com/fw876/helloworld/trunk/ $BUILD_DIR/helloworld
+        cd $BUILD_DIR
+        rm -rf tmp/
+        ./scripts/feeds update -a
+        # ** update golang
+        rm -rf $BUILD_DIR/feeds/packages/lang/golang
+        svn co https://github.com/immortalwrt/packages/trunk/lang/golang feeds/packages/lang/golang
+        # ** update packages
+        rm -rf $BUILD_DIR/feeds/packages/net/smartdns
+        rm -rf $BUILD_DIR/feeds/packages/net/chinadns-ng
+        rm -rf $BUILD_DIR/feeds/packages/net/dns2socks
+        rm -rf $BUILD_DIR/feeds/packages/net/dns2tcp
+        rm -rf $BUILD_DIR/feeds/packages/net/hysteria
+        rm -rf $BUILD_DIR/feeds/packages/net/ipt2socks
+        rm -rf $BUILD_DIR/feeds/packages/net/microsocks
+        rm -rf $BUILD_DIR/feeds/packages/net/naiveproxy
+        rm -rf $BUILD_DIR/feeds/packages/net/redsocks2
+        rm -rf $BUILD_DIR/feeds/packages/net/shadowsocks-rust
+        rm -rf $BUILD_DIR/feeds/packages/net/shadowsocksr-libev
+        rm -rf $BUILD_DIR/feeds/packages/net/simple-obfs
+        rm -rf $BUILD_DIR/feeds/packages/net/tcping
+        rm -rf $BUILD_DIR/feeds/packages/net/trojan
+        rm -rf $BUILD_DIR/feeds/packages/net/v2ray-core
+        rm -rf $BUILD_DIR/feeds/packages/net/v2ray-geodata
+        rm -rf $BUILD_DIR/feeds/packages/net/v2ray-plugin
+        rm -rf $BUILD_DIR/feeds/packages/net/v2raya
+        rm -rf $BUILD_DIR/feeds/packages/net/xray-core
+        rm -rf $BUILD_DIR/feeds/packages/net/xray-plugin
+        # ** update luci app
+        rm -rf $LUCI_APP_DIR/luci-app-ssr-plus
+        rm -rf $LUCI_APP_DIR/luci-app-smartdns
+        rm -rf $LUCI_APP_DIR/luci-app-openclash
+        # smartdns 
+        # cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
+        svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/smartdns $BUILD_DIR/feeds/packages/net/smartdns
+        svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-smartdns $LUCI_APP_DIR/luci-app-smartdns
+        # luci-app-openclash
+        svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash $LUCI_APP_DIR/luci-app-openclash
+        cp -rf $BUILD_DIR/helloworld/chinadns-ng	$BUILD_DIR/feeds/packages/net/chinadns-ng
+        cp -rf $BUILD_DIR/helloworld/dns2socks	        $BUILD_DIR/feeds/packages/net/dns2socks
+        cp -rf $BUILD_DIR/helloworld/dns2tcp	        $BUILD_DIR/feeds/packages/net/dns2tcp
+        cp -rf $BUILD_DIR/helloworld/hysteria	        $BUILD_DIR/feeds/packages/net/hysteria
+        cp -rf $BUILD_DIR/helloworld/ipt2socks	        $BUILD_DIR/feeds/packages/net/ipt2socks
+        cp -rf $BUILD_DIR/helloworld/lua-neturl	        $BUILD_DIR/feeds/packages/net/lua-neturl
+        cp -rf $BUILD_DIR/helloworld/microsocks	        $BUILD_DIR/feeds/packages/net/microsocks
+        cp -rf $BUILD_DIR/helloworld/naiveproxy	        $BUILD_DIR/feeds/packages/net/naiveproxy
+        cp -rf $BUILD_DIR/helloworld/redsocks2	        $BUILD_DIR/feeds/packages/net/redsocks2
+        cp -rf $BUILD_DIR/helloworld/shadowsocks-rust   $BUILD_DIR/feeds/packages/net/shadowsocks-rust
+        cp -rf $BUILD_DIR/helloworld/shadowsocksr-libev	$BUILD_DIR/feeds/packages/net/shadowsocksr-libev
+        cp -rf $BUILD_DIR/helloworld/simple-obfs	$BUILD_DIR/feeds/packages/net/simple-obfs
+        cp -rf $BUILD_DIR/helloworld/tcping	        $BUILD_DIR/feeds/packages/net/tcping
+        cp -rf $BUILD_DIR/helloworld/trojan	        $BUILD_DIR/feeds/packages/net/trojan
+        cp -rf $BUILD_DIR/helloworld/v2ray-core	        $BUILD_DIR/feeds/packages/net/v2ray-core
+        cp -rf $BUILD_DIR/helloworld/v2ray-geodata	$BUILD_DIR/feeds/packages/net/v2ray-geodata
+        cp -rf $BUILD_DIR/helloworld/v2ray-plugin	$BUILD_DIR/feeds/packages/net/v2ray-plugin
+        cp -rf $BUILD_DIR/helloworld/xray-core	        $BUILD_DIR/feeds/packages/net/xray-core
+        cp -rf $BUILD_DIR/helloworld/xray-plugin	$BUILD_DIR/feeds/packages/net/xray-plugin
+        cp -rf $BUILD_DIR/helloworld/luci-app-ssr-plus  $LUCI_APP_DIR/luci-app-ssr-plus
+        ./scripts/feeds install -a
+        curl -s https://raw.githubusercontent.com/we2oxy/Build-Immortalwrt/master/buildinfo/R2S/21.02.4_config.seed |tee $BUILD_DIR/.config
+        # echo -e "CONFIG_PACKAGE_v2raya=y\nCONFIG_PACKAGE_luci-app-v2raya=y\n" |tee -a $BUILD_DIR/.config
+        # **cat dafault build config
+        sed -i '/openclash/d;/upnp/d' $BUILD_DIR/.config
+        cat -n $BUILD_DIR/.config
+        # **modify default ip
+        sed -n -e 's#192.168.1.1#192.168.100.51#p' -e 's#255.255.255.0#255.255.0.0#p' $BUILD_DIR/package/base-files/files/bin/config_generate
+        sed -i -e 's#192.168.1.1#192.168.100.51#'  -e 's#255.255.255.0#255.255.0.0#' $BUILD_DIR/package/base-files/files/bin/config_generate
+        # ** init /etc/uci-defaults/
+        mkdir -pv $BUILD_DIR/files/etc/{crontabs,config,ssrplus,smartdns,uci-defaults}
+        mkdir -pv $BUILD_DIR/files/usr/share/xray/ $BUILD_DIR/files/tmp/nali $BUILD_DIR/files/usr/bin/
+        echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1'|tee $BUILD_DIR/files/etc/sysctl.conf
+        # **uci 99-default-settings
+        sed -i '/exit 0/d' $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_sys_uci_custom.txt >>$BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        cat -n $BUILD_DIR/package/emortal/default-settings/files/99-default-settings
+        echo "0 */1 * * * /usr/sbin/ntpdate ntp.tencent.com && /usr/sbin/hwclock -w"|tee $BUILD_DIR/files/etc/crontabs/root
+        echo "#0 */1 * * * /bin/sed -i '/git/d;/vscode/d' /etc/hosts ;/usr/bin/curl -s https://raw.hellogithub.com/hosts | /bin/sed '/^#/d;/^$/d' >> /etc/hosts;" | tee -a $BUILD_DIR/files/etc/crontabs/root
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+        wget -P $BUILD_DIR/files/usr/share/xray/ https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+        # rm -rf $LUCI_APP_DIR/luci-app-upnp
+        # rm -rf $LUCI_APP_DIR/luci-app-v2raya
+        # ** update packages
+        # rm -rf $BUILD_DIR/feeds/packages/net/miniupnpd
+        # rm -rf $BUILD_DIR/feeds/packages/net/v2raya
+        # rm -rf $BUILD_DIR/feeds/packages/net/smartdns/Makefile
+    - name: Configuration Customization
+      shell: bash
+      id: configuration
+      run: |
+        cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
+        # ttyd
+        cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
+        # uci luci-ssr-plus
+        curl -s "https://raw.hellogithub.com/hosts" | sed -e '/#/d' -e '/^$/d' | awk '{print $2}' >$BUILD_DIR/files/etc/ssrplus/black.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt > $BUILD_DIR/files/etc/ssrplus/white.list
+        # curl -s https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt >> $BUILD_DIR/files/etc/ssrplus/black.list
+        # sed -i 's/full://g' $BUILD_DIR/files/etc/ssrplus/white.list
+        cat $BUILD_DIR/files/etc/ssrplus/black.list
+        # cat $BUILD_DIR/files/etc/ssrplus/white.list
+        sed -i '/exit 0/d' $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        cat $GITHUB_WORKSPACE/uciconf/R2S/my_ssr_uci_custom.txt >>$LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        # cat -n $LUCI_APP_DIR/luci-app-ssr-plus/root/etc/uci-defaults/luci-ssr-plus
+        # sed -n '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        # sed -i '/result.encrypt_method/a\                result.fast_open = "1"' $LUCI_APP_DIR/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+        #  ntpd
+        sed -i '/^DEFAULT_SERVERS/c\DEFAULT_SERVERS="ntp.tencent.com ntp.ntsc.ac.cn cn.ntp.org.cn time.windows.com time.cloudflare.com time.apple.com"' $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
+        #cat -n $BUILD_DIR/feeds/packages/net/ntpd/files/ntpdate.init
+        # upnp
+        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/miniupnpd $BUILD_DIR/feeds/packages/net/miniupnpd
+        # svn co https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications/luci-app-upnp $LUCI_APP_DIR/luci-app-upnp
+        # v2raya
+        # svn co https://github.com/zxlhhyccc/luci-app-v2raya/trunk/ $LUCI_APP_DIR/luci-app-v2raya
+        # svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/v2raya $BUILD_DIR/feeds/packages/net/v2raya
+
+    - name: Defconfig
+      id: defconfig
+      run: |
+        cd $BUILD_DIR
+        ./scripts/feeds install -a -f
+        bash $GITHUB_WORKSPACE/scripts/03_defconfig.sh immortalwrt-v21.02.7-r2s.buildinfo
+        
+    - name: Deliver buildinfo
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-v21.02.7-r2s-buildinfo
+        path: /build/buildinfo/
+        if-no-files-found: ignore
+        
+    - name: Compile
+      shell: bash
+      working-directory: /build/immortalwrt
+      id: tools
+      run: |
+        echo -e "$(nproc) thread compile"
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        #make tools/compile -j$(nproc) || make tools/compile -j$(nproc)
+        #make toolchain/compile -j$(nproc) || make toolchain/compile -j$(nproc)
+        #make target/compile -j$(nproc) || make target/compile -j$(nproc) IGNORE_ERRORS=1
+        #make diffconfig
+        #make package/compile -j$(nproc) IGNORE_ERRORS=1 || make package/compile -j$(nproc) IGNORE_ERRORS=1
+        #make package/index
+        #make package/install -j$(nproc) || make package/install -j1 V=s
+        #make target/install -j$(nproc) || make target/install -j1 V=s
+        #make checksum
+        make -j$(($(nproc) + 2)) || make -j1 V=s
+        tree bin/
+        tree -d bin/
+        cd $BUILD_DIR/bin/targets/rockchip/armv8 && ls -lSha
+        
+    - name: Prepare artifact
+      shell: bash
+      run: |
+        bash $GITHUB_WORKSPACE/scripts/04_packaging.sh
+        
+    - name: Deliver firmware
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: immortalwrt-v21.02.7-r2s-firmware
+        path: /build/upload/
+        if-no-files-found: ignore
+        
+    - name: Generate release tag
+      id: tag
+      run: |
+        touch release.txt
+        echo "http://192.168.100.51" > release.txt
+        echo "http://immortalwrt.lan" >> release.txt
+        echo "netmask 255.255.0.0" >> release.txt
+        echo "tag_name=immortalwrt-v21.02.7-r2s" >> $GITHUB_ENV
+        echo "build_date=`date +%F_%H%M%S`" >> $GITHUB_ENV
+        
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ env.tag_name }}_${{ env.build_date }}
+        tag_name: ${{ env.tag_name }}_${{ env.build_date }}
+        body_path: release.txt
+        files: |
+          /build/upload/*
