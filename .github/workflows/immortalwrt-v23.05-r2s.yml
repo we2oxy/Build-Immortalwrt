@@ -47,12 +47,12 @@ jobs:
         sudo -E apt-get -qq install squashfs-tools $(curl -fsSL git.io/depends-ubuntu-2004) $(cat $GITHUB_WORKSPACE/immortalwrt-build-dependencies)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        svn co -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
-        pushd "po2lmo"
-        make po2lmo
-        sudo rm -rf "/usr/bin/po2lmo"
-        sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
-        popd
+        # svn co -r19250 "https://github.com/openwrt/luci/trunk/modules/luci-base/src" "po2lmo"
+        # pushd "po2lmo"
+        # make po2lmo
+        # sudo rm -rf "/usr/bin/po2lmo"
+        # sudo cp -fp "po2lmo" "/usr/bin/po2lmo"
+        # popd
         docker image prune -a -f
         sudo -E swapoff -a
         ulimit -n 4096
