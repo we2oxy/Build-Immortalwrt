@@ -130,6 +130,7 @@ jobs:
       run: |
         cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
         # ttyd
+        mkdir -pv $BUILD_DIR/files/etc/config/
         cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd > $BUILD_DIR/files/etc/config/ttyd
         # smartdns 
         # cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
