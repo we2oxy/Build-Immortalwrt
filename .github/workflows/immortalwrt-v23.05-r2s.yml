@@ -130,7 +130,7 @@ jobs:
       run: |
         cat -n $GITHUB_WORKSPACE/uciconf/R2S/*.txt
         # ttyd
-        cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd |tee $BUILD_DIR/files/etc/config/ttyd
+        cat $GITHUB_WORKSPACE/uciconf/R2S/ttyd > $BUILD_DIR/files/etc/config/ttyd
         # smartdns 
         # cp -v $GITHUB_WORKSPACE/uciconf/R2S/custom.conf $BUILD_DIR/files/etc/smartdns/
         # svn co https://github.com/immortalwrt/packages/branches/openwrt-23.05/net/smartdns $BUILD_DIR/feeds/packages/net/smartdns
